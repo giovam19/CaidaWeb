@@ -1,0 +1,70 @@
+html, body {
+    padding: 0px;
+    margin: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.home {
+    background-color: #9DB17C;
+}
+
+.home-text {
+    font-size: 96px;
+    margin-top: 72px;
+    font-family: Georgia;
+}
+
+.rl-text {
+    font-size: 50px;
+    margin-bottom: 30px;
+    font-family: Georgia;
+}
+
+.regform {
+    padding: 25px;
+    border-radius: 14px;
+    background-color: #82735C;
+    width: 60%;
+}
+
+input.input-form {
+    background-color: #CFBB86;
+    border: 1px solid black;
+    border-radius: 8px;
+    color: black;
+}
+
+button.button-green {
+    background-color: #9DB17C;
+    border-radius: 14px;
+    border: none;
+    color: black;
+    text-align: center;
+    font-weight: 600;
+    padding: 10px 30px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+button.button-green:hover {
+    background-color: #9DB17C;
+}
+
+.text-link {
+    color: white;
+}
+
+.text-link:hover {
+    color: blue;
+    cursor: pointer;
+}
+
+.bigger {
+    width: 100%;
+}
+
+.taller {
+    height: 100%;
+}
