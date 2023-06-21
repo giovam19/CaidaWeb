@@ -1,0 +1,27 @@
+{
+  "name": "caida",
+  "version": "1.0.0",
+  "description": "juego de cartas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giovam19/CaidaWeb.git"
+  },
+  "author": "gio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/giovam19/CaidaWeb/issues"
+  },
+  "homepage": "https://github.com/giovam19/CaidaWeb#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
