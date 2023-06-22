@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Registro</title>
 
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -23,24 +23,24 @@
         </div>
         <div class="d-flex flex-column justify-content-center align-items-center bigger">
             <h3 class="rl-text">Registro</h3>
-            <form class="regform">
+            <form class="regform" action="/register" method="POST">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="inputName">Name</label>
-                        <input type="text" class="form-control input-form" id="inputName" placeholder="Name">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control input-form" id="name" name="name" placeholder="Name">
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="inputUsername">Username</label>
-                        <input type="text" class="form-control input-form" id="inputUsername" placeholder="Username">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control input-form" id="username" name="username" placeholder="Username" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputEmail">Email</label>
-                    <input type="email" class="form-control input-form" id="inputEmail" placeholder="Email" required>
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control input-form" id="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="form-group">
-                    <label for="inputPassword">Password</label>
-                    <input type="password" class="form-control input-form" id="inputPassword" required>
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control input-form" id="password" name="password" required>
                 </div>
                 <button type="submit" class="button-green btn btn-primary">Sign in</button>
             </form>

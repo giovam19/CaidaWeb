@@ -1,5 +1,6 @@
-/res
 .jpg
 .png
+/public/res
 /node_modules
 package-lock.json
+config.js
