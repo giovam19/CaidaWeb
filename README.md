@@ -16,5 +16,5 @@ const config = {
 };
 ```
 ### Execute
-* For **Debug** can run the folowing command: ```npm run serve``` where you can make changes and see it in real time pressing **F5**<br>
+* For **Debug** can run the folowing command: ```npm run serve``` where you can make changes and see it refreshing **F5**<br>
 * For **Start** can run the folowing command: ```npm run start```
