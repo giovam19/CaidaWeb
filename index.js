@@ -27,6 +27,9 @@ app.get('/register', (req, res) => {
 app.get('/lobby', (req, res) => {
     res.render('lobby');
 });
+app.get('/mesa', (req, res) => {
+    res.render('mesa');
+});
 
 //rutas bbdd
 app.post('/auth', async function (req, res) {
@@ -34,8 +37,10 @@ app.post('/auth', async function (req, res) {
     const data = await Users.loggin(email, password);
     if (data) {
         res.redirect('/lobby');
+        console.log("Usuario logeado");
     } else {
         res.redirect('/');
+        console.log("Usuario no logeado");
     }
 });
 app.post('/register', async function (req, res) {
