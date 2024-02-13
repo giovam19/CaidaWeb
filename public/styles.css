@@ -68,6 +68,69 @@ button.button-green:hover {
     height: 100%;
 }
 
+.ver-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.hor-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.room {
+    position: relative;
+    background-color: #82735C;
+    margin-left: 3%;
+    margin-right: 2%;
+    height: 52%;
+    width: 43%;
+    border-radius: 30px;
+    border: 1px solid;
+    border-color: #000000;
+}
+
+.settings-icon {
+    position: absolute;
+    top: 4%;
+    left: 2%;
+    width: 5%;
+}
+.room-title {
+    position: absolute;
+    top: 4%;
+    left: 40%;
+    font-size: 200%;
+    font-family: "Inter-Regular", Helvetica;
+    color: #ffffff;
+    margin: 0;
+}
+.team-cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #CFBB86;
+    border: 1px solid;
+    border-color: #000000;
+    height: 55%;
+    width: 70%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+.room-team-name {
+    color: #ffffff;
+    font-size: 30px;
+}
+
 .juego {
     background-color: #cfbb86;
     height: 100%;
