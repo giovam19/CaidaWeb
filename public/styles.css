@@ -5,40 +5,46 @@ html, body {
 }
 
 .home {
-    background-color: #3e6be7;
+    background-color: #11151C;
 }
 
 .home-text {
     font-size: 96px;
     margin-top: 72px;
     font-family: Georgia;
+    color: white;
 }
 
 .rl-text {
     font-size: 50px;
     margin-bottom: 30px;
     font-family: Georgia;
+    color: white;
 }
 
 .regform {
     padding: 25px;
     border-radius: 14px;
-    background-color: #82735C;
+    background-color: #563C36;
     width: 60%;
 }
 
 input.input-form {
-    background-color: #CFBB86;
+    background-color: #866F69;
     border: 1px solid black;
     border-radius: 8px;
     color: black;
 }
 
+input.input-form::placeholder {
+    color: whitesmoke;
+}
+
 button.button-green {
-    background-color: #3e6be7;
+    background-color: #3F4C64;
     border-radius: 14px;
     border: none;
-    color: black;
+    color: white;
     text-align: center;
     font-weight: 600;
     padding: 10px 30px;
@@ -86,12 +92,20 @@ button.button-green:hover {
     height: 100%;
 }
 
+.lobby-title {
+    margin-top: 6%;
+    color: white;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 55px;
+}
+
 .room {
     position: relative;
-    background-color: #82735C;
+    background-color: #563C36;
     margin-left: 3%;
     margin-right: 2%;
-    height: 52%;
+    margin-bottom: 5%;
+    height: 55%;
     width: 43%;
     border-radius: 30px;
     border: 1px solid;
@@ -107,7 +121,7 @@ button.button-green:hover {
 .room-title {
     position: absolute;
     top: 4%;
-    left: 40%;
+    left: 42%;
     font-size: 200%;
     font-family: "Inter-Regular", Helvetica;
     color: #ffffff;
@@ -118,17 +132,22 @@ button.button-green:hover {
     flex-direction: column;
     align-items: center;
     border-radius: 15px;
-    background-color: #CFBB86;
-    border: 1px solid;
-    border-color: #000000;
-    height: 55%;
+    background-color: #866F69;
+    height: 60%;
     width: 70%;
+    margin-top: 5%;
     margin-left: 5%;
     margin-right: 5%;
 }
 .room-team-name {
     color: #ffffff;
     font-size: 30px;
+}
+.isplayer {
+    margin-bottom: 8%;
+    height: 10%;
+    background-color: #212D40;
+    color: white;
 }
 
 .juego {

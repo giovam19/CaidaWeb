@@ -5,6 +5,7 @@ export default class Player {
         this.score = 0;
         this.turn = false;
         this.cards = [];
+        this.cardToPlay = null;
     }
 
     addScore() {
@@ -37,5 +38,26 @@ export default class Player {
 
     getCards() {
         return this.cards;
+    }
+
+    choseACard(cardIndex) {
+        this.cardToPlay = cardIndex
+    }
+
+    makeMove() {
+        if (!this.turn) {
+            console.log("Wait your turn!");
+            return null;
+        }
+
+        if (this.cardToPlay == null){
+            console.log("Select a Card to play!");
+            return null;
+        }
+
+        var played = this.cards[this.cardToPlay];
+        this.cardToPlay = null;
+
+        return played;
     }
 }
