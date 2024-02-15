@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 async function loggin(email, pass) {
     const rows = await db.query(
-        `SELECT username, password FROM users where email = ?`,
+        `SELECT username, email, password FROM users WHERE email = ?`,
         [email]
     );
     var data = helper.emptyOrRows(rows);
@@ -13,15 +13,30 @@ async function loggin(email, pass) {
     return data;
 }
 
-async function register(email, name, username, pass) {
-    const encryptedPass = await bcrypt.hash(pass, 10);
+async function existUser(email) {
+    const rows = await db.query(`SELECT email FROM users WHERE email = ?`, [email]);
+    var data = helper.emptyOrRows(rows);
 
+    if (data.length > 0) {
+        return true;
+    }
+        
+    return false;
+}
+
+async function register(email, name, username, pass) {
     try {
+        var emailExists = await existUser(email);
+        if (emailExists) {
+            return {isError: true, message: "Usuario registrado"};
+        }
+
+        const encryptedPass = await bcrypt.hash(pass, 10);
         await db.query(`INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)`, [name, username, email, encryptedPass]);
-        return 0;
+
+        return {isError: false, message: "Usuario registrado"};
     } catch (err) {
-        console.error(`Error while inserting user `, err.errno, err.sqlMessage);
-        return err.errno;
+        return {isError: true, message: "Error intendando registrar usuario!"};
     }
 }
 

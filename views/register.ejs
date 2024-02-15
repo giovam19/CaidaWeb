@@ -44,7 +44,14 @@
                 </div>
                 <button type="submit" class="button-green btn btn-primary">Sign in</button>
             </form>
-            <p class="text-link" style="margin-top: 8px;" onclick="window.location.href='/'">Iniciar sesion</p>
+            <p class="text-link" onclick="window.location.href='/'">Iniciar sesion</p>
+            <% if (res_obj) { %>
+                <% if (res_obj.isError) { %>
+                    <p class="error-msg"> <%= res_obj.message %> </p>
+                <% } else { %>
+                    <p class="success-msg"> <%= res_obj.message %> </p>
+                <% } %>
+            <% } %>
         </div>
     </div>
 

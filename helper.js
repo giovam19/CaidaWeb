@@ -11,9 +11,7 @@ function validateLogin(data, pass) {
     if ( data == [] || data.length === 0) {
         return false;
     }
-
     
-
     const {username, password} = data[0];
     const validPass = bcrypt.compareSync(pass, password);
 

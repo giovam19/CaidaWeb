@@ -9,5 +9,5 @@ CREATE TABLE users(
 	name		VARCHAR(255),
     username	VARCHAR(255),
     password	VARCHAR(255),
-	PRIMARY KEY (id, email)
+	PRIMARY KEY (id)
 );

@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const Users = require('./services/users.js');
-const e = require('express');
 
 const PORT = 3000; // El puerto en el que deseas ejecutar el servidor
 
@@ -22,7 +21,7 @@ app.get('/', (req, res) => {
 });
 app.get('/register', (req, res) => {
     //res.sendFile(path.join(__dirname, '/src/pages/register.html'));
-    res.render('register');
+    res.render('register', { res_obj: {} });
 });
 app.get('/lobby', (req, res) => {
     res.render('lobby');
@@ -45,12 +44,9 @@ app.post('/auth', async function (req, res) {
 });
 app.post('/register', async function (req, res) {
     const { name, username, email, password } = req.body;
-    const data = await Users.register(email, name, username, password);
-    if (data === 0) {
-        res.redirect('/');
-    } else {
-        res.redirect('/register');
-    }
+    var data = await Users.register(email, name, username, password);
+
+    res.render('register', { res_obj: data });
 });
 
 
