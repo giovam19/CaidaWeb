@@ -36,7 +36,7 @@ async function register(email, name, username, pass) {
 
         return {isError: false, message: "Usuario registrado"};
     } catch (err) {
-        return {isError: true, message: "Error intendando registrar usuario!"};
+        return {isError: true, message: "Error intentando registrar al usuario!"};
     }
 }
 
