@@ -7,15 +7,22 @@ function emptyOrRows(rows) {
   return rows;
 }
 
-function validateLogin(data, pass) {
-    if ( data == [] || data.length === 0) {
-        return false;
+function validateLogin(rows, pass) {
+    const data = emptyOrRows(rows);
+
+    if ( data == [] || data.length == 0) {
+        return {isError: true, user: null, message: "Email no encontrado."};
     }
     
-    const {username, password} = data[0];
+    const {id, username, email, password} = data[0];
+    console.log("id: " + id + " username: " + username + " email: " + email + " password: " + password);
     const validPass = bcrypt.compareSync(pass, password);
 
-    return validPass;
+    if (validPass) {
+        return { isError: false, user: {id, username, email}, message: "Usuario logeado"};
+    }
+
+    return { isError: true, user: null, message: "Contraseña incorrecta!" };
 }
 
 module.exports = {

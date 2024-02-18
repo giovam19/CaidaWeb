@@ -35,6 +35,9 @@
                 <button type="submit" class="button-green btn btn-primary">Submit</button>
             </form>
             <p style="margin-top: 8px; color: grey;">No tienes cuenta? <span class="text-link" onclick="window.location.href='/register'">Registro</span></p>
+            <% if (message.length > 0) { %>
+                <p class="error-msg"><%= message %></p>
+            <% } %>
         </div>
     </div>
 
