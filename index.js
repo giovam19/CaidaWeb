@@ -1,25 +1,44 @@
 const express = require('express');
-const session = require('express-session');
-const flash = require('express-flash');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
+const flash = require('express-flash');
 const path = require('path');
 const Users = require('./services/users.js');
+
 const app = express();
 
 const PORT = 3000; // El puerto en el que deseas ejecutar el servidor
 
-passport.use(new LocalStrategy(
-    function (username, password, done) {
-        Users.loggin(username, password).then(data => {
-            if (!data.isError) {
-                return done(null, data.user);
-            } else {
-                return done(null, false, { message: data.message });
-            }
-        });
+// Configuración del middleware de flash
+app.use(flash());
+
+app.use(cookieParser('#estascaidosapo91'));
+
+// Configuración del middleware de sesión
+app.use(session({
+    secret: '#estascaidosapo91',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 86400000, //duracion de la sesion 24h
     }
-));
+}));
+
+// Middleware de inicialización de Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy({ usernameField: 'email' },function (email, password, done) {
+    Users.loggin(email, password).then(data => {
+        if (!data.isError) {
+            return done(null, data.user);
+        } else {
+            return done(null, false, { message: data.message });
+        }
+    });
+}));
 
 passport.serializeUser(function (user, done) {
     done(null, { id: user.id, username: user.username, email: user.email });
@@ -34,24 +53,6 @@ passport.deserializeUser(function (userData, done) {
     
     done(null, user);
 });
-
-// Configuración del middleware de flash
-app.use(flash());
-
-// Configuración del middleware de sesión
-app.use(session({
-    secret: '#estascaidosapo91',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: false,
-        maxAge: 7200000
-    }
-}));
-
-// Middleware de inicialización de Passport.js
-app.use(passport.initialize());
-app.use(passport.session());
 
 //inicializacion de express
 app.use(express.json());
@@ -78,15 +79,15 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
     res.render('register', { res_obj: {} });
 });
-app.get('/lobby', (req, res) => {
+/*app.get('/lobby', (req, res) => {
     res.render('lobby');
-});
+});*/
 app.get('/mesa', (req, res) => {
     res.render('mesa');
 });
-/*app.get('/lobby', verificarAutenticacion, function(req, res) {
-    res.render('lobby');
-});*/
+app.get('/lobby', verificarAutenticacion, function(req, res) {
+    res.render('lobby', { user: req.user });
+});
 /*app.get('/mesa', verificarAutenticacion, function(req, res) {
     res.render('mesa');
 });*/
@@ -96,17 +97,6 @@ app.post('/auth', passport.authenticate('local', {
     failureRedirect: '/',
     failureFlash: true
 }));
-/*app.post('/auth', async function (req, res) {
-    const { email, password } = req.body;
-    const data = await Users.loggin(email, password);
-    if (data) {
-        res.redirect('/lobby');
-        console.log("Usuario logeado");
-    } else {
-        res.redirect('/');
-        console.log("Usuario no logeado");
-    }
-});*/
 app.post('/register', async function (req, res) {
     const { name, username, email, password } = req.body;
     var data = await Users.register(email, name, username, password);

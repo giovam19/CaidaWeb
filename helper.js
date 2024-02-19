@@ -15,7 +15,6 @@ function validateLogin(rows, pass) {
     }
     
     const {id, username, email, password} = data[0];
-    console.log("id: " + id + " username: " + username + " email: " + email + " password: " + password);
     const validPass = bcrypt.compareSync(pass, password);
 
     if (validPass) {

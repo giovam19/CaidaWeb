@@ -20,7 +20,8 @@ async function register(email, name, username, pass) {
             return {isError: true, message: "Usuario ya existe con estes email. Por favor, intente con otro email o inicie sesión si ya está registrado"};
         }
 
-        const encryptedPass = await bcrypt.hash(pass, 10);
+        const salt = await bcrypt.genSalt(10);
+        const encryptedPass = await bcrypt.hash(pass, salt);
         await db.query(`INSERT INTO users (name, username, email, password) VALUES (?, ?, ?, ?)`, [name, username, email, encryptedPass]);
 
         return {isError: false, message: "Usuario registrado"};

@@ -125,6 +125,34 @@ button.button-green:hover {
     border-color: #000000;
 }
 
+.user-info {
+    align-items: end;
+    position: absolute;
+    top: 5%;
+    right: 2%;
+    width: 11%;
+    height: 12%;
+    background-color: #484557;
+    border-radius: 15px;
+}
+.username-info {
+    margin-top: 2%;
+    margin-bottom: 0;
+    margin-right: 10%;
+    font-size: 35px;
+    color: white;
+}
+.wins-info {
+    margin-top: 1%;
+    margin-bottom: 0;
+    margin-right: 10%;
+    font-size: 20px;
+    color: white;
+}
+.user-info:hover {
+    cursor: pointer;
+}
+
 .settings-icon {
     position: absolute;
     top: 4%;
