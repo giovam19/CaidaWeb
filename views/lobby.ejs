@@ -15,7 +15,12 @@
         <h1 class="lobby-title">Lobby</h1>
         <div class="ver-cont user-info">
             <p class="username-info"><%= user.username %></p>
-            <p class="wins-info">Ganadas: 0</p>
+            <div class="hor-cont win-exit-space">
+                <p class="wins-info">Ganadas: 0</p>
+                <form action="/logout" method="GET">
+                    <button class="exit-button" type="submit">Cerrar</button>
+                </form>
+            </div>
         </div>
         <div class="hor-cont">
             <div class="room">

@@ -82,15 +82,24 @@ app.get('/register', (req, res) => {
 /*app.get('/lobby', (req, res) => {
     res.render('lobby');
 });*/
-app.get('/mesa', (req, res) => {
+/*app.get('/mesa', (req, res) => {
     res.render('mesa');
-});
+});*/
 app.get('/lobby', verificarAutenticacion, function(req, res) {
     res.render('lobby', { user: req.user });
 });
-/*app.get('/mesa', verificarAutenticacion, function(req, res) {
+app.get('/mesa', verificarAutenticacion, function(req, res) {
     res.render('mesa');
-});*/
+});
+app.get('/logout', function(req, res) {
+    req.logout(function(err) {
+        if (err) {
+            console.error('Error al cerrar sesión: ', err);
+        }
+        
+        res.redirect('/');
+    });
+});
 
 app.post('/auth', passport.authenticate('local', {
     successRedirect: '/lobby',

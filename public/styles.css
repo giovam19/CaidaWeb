@@ -126,30 +126,53 @@ button.button-green:hover {
 }
 
 .user-info {
-    align-items: end;
+    align-items: start;
     position: absolute;
     top: 5%;
     right: 2%;
     width: 11%;
+    overflow: hidden;
     height: 12%;
     background-color: #484557;
     border-radius: 15px;
 }
 .username-info {
-    margin-top: 2%;
+    margin-top: 0;
     margin-bottom: 0;
-    margin-right: 10%;
+    margin-left: 10%;
+    width: 85%;
     font-size: 35px;
     color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.win-exit-space {
+    justify-content: start;
+    height: 0;
+    margin-top: 8%;
+    margin-bottom: 5%;
+    margin-left: 10%;
 }
 .wins-info {
-    margin-top: 1%;
+    margin-top: 0;
     margin-bottom: 0;
     margin-right: 10%;
-    font-size: 20px;
+    font-size: 15px;
     color: white;
 }
-.user-info:hover {
+.exit-button {
+    background-color: #840A0A;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+}
+.exit-button:hover {
+    background-color: #410303;
+    cursor: pointer;
+}
+.username-info:hover {
     cursor: pointer;
 }
 
