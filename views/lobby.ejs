@@ -7,14 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Lobby</title>
 
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/lobby.css" />
 </head>
 
 <body class="home">
-    <div class="ver-cont home">
+    <div class="hor-cont" style="height: auto; width: auto;">
         <h1 class="lobby-title">Lobby</h1>
+    </div>
+    <div class="ver-cont home">
         <div class="ver-cont user-info">
-            <p class="username-info"><%= user.username %></p>
+            <p class="username-info" id="username"><%= user.username %></p>
             <div class="hor-cont win-exit-space">
                 <p class="wins-info">Ganadas: 0</p>
                 <form action="/logout" method="GET">
@@ -23,40 +25,44 @@
             </div>
         </div>
         <div class="hor-cont">
-            <div class="room">
+            <div class="room" id="room1">
                 <img src="/res/img/serie/settings-icon.png" alt="settings" class="settings-icon">
                 <h2 class="room-title">Mesa 1</h2>
+                <button class="exit-room-b" id="exitB1">Salir</button>
                 <div class="hor-cont">
                     <div class="team-cont">
                         <h3 class="room-team-name">Equipo 1</h3>
-                        <button class="isplayer"> <img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> Player 1 </button>
-                        <button class="noplayer">Ingresar</button>
+                        <button class="noplayer" mesa="1" team="1" pos="1" id="r1p1">Ingresar</button>
+                        <button class="noplayer" mesa="1" team="1" pos="2" id="r1p2">Ingresar</button>
                     </div>
                     <div class="team-cont">
                         <h3 class="room-team-name">Equipo 2</h3>
-                        <button class="isplayer"> <img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> Player 1</button>
-                        <button class="noplayer">Ingresar</button>
+                        <button class="noplayer" mesa="1" team="2" pos="3" id="r1p3">Ingresar</button>
+                        <button class="noplayer" mesa="1" team="2" pos="4" id="r1p4">Ingresar</button>
                     </div>
                 </div>
             </div>
-            <div class="room">
+            <div class="room" id="room2">
                 <img src="/res/img/serie/settings-icon.png" alt="settings" class="settings-icon">
                 <h2 class="room-title">Mesa 2</h2>
+                <button class="exit-room-b" id="exitB2">Salir</button>
                 <div class="hor-cont">
                     <div class="team-cont">
                         <h3 class="room-team-name">Equipo 1</h3>
-                        <button class="isplayer"> <img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> Player 1 </button>
-                        <button class="noplayer">Ingresar</button>
+                        <button class="noplayer" mesa="2" team="1" pos="1" id="r2p1">Ingresar</button>
+                        <button class="noplayer" mesa="2" team="1" pos="2" id="r2p2">Ingresar</button>
                     </div>
                     <div class="team-cont">
                         <h3 class="room-team-name">Equipo 2</h3>
-                        <button class="isplayer"> <img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> Player 1</button>
-                        <button class="noplayer">Ingresar</button>
+                        <button class="noplayer" mesa="2" team="2" pos="3" id="r2p3">Ingresar</button>
+                        <button class="noplayer" mesa="2" team="2" pos="4" id="r2p4">Ingresar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="/js/lobby.js" type="module"></script>
 </body>
 
 </html>

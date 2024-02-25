@@ -1,0 +1,105 @@
+html, body {
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+.home {
+    background-color: #11151C;
+}
+
+.home-text {
+    font-size: 96px;
+    margin-top: 72px;
+    font-family: Georgia;
+    color: white;
+}
+
+.rl-text {
+    font-size: 50px;
+    margin-bottom: 30px;
+    font-family: Georgia;
+    color: white;
+}
+
+.regform {
+    padding: 25px;
+    border-radius: 14px;
+    background-color: #563C36;
+    width: 60%;
+}
+
+input.input-form {
+    background-color: #866F69;
+    border: 1px solid black;
+    border-radius: 8px;
+    color: black;
+}
+
+input.input-form::placeholder {
+    color: whitesmoke;
+}
+
+button.button-green {
+    background-color: #3F4C64;
+    border-radius: 14px;
+    border: none;
+    color: white;
+    text-align: center;
+    font-weight: 600;
+    padding: 10px 30px;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+button.button-green:hover {
+    background-color: #2f4fa5;
+}
+
+.text-link {
+    color: white;
+    margin-top: 8px;
+}
+
+.text-link:hover {
+    color: #1b3270;
+    cursor: pointer;
+}
+
+.error-msg {
+    color: darkred;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.success-msg {
+    color: darkgreen;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.bigger {
+    width: 100%;
+}
+
+.taller {
+    height: 100%;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+   
+::-webkit-scrollbar-thumb {
+    background: #212D40;
+    border-radius: 14px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2f4fa5;
+}
+
+@media only screen and (max-width: 1280px) {
+    
+}

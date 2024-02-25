@@ -1,0 +1,231 @@
+html, body {
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+
+.home {
+    background-color: #11151C;
+}
+
+.ver-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.hor-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.lobby-title {
+    margin-top: 80px;
+    margin-bottom: 100px;
+    color: white;
+    font-family: "Inter-Regular", Helvetica;
+    font-size: 55px;
+}
+
+.room {
+    position: relative;
+    background-color: #563C36;
+    margin-left: 3%;
+    margin-right: 2%;
+    height: 450px;
+    width: 800px;
+    border-radius: 30px;
+    border: 1px solid;
+    border-color: #000000;
+}
+
+.user-info {
+    align-items: start;
+    position: absolute;
+    top: 5%;
+    right: 2%;
+    width: 11%;
+    overflow: hidden;
+    height: 12%;
+    background-color: #484557;
+    border-radius: 15px;
+}
+.username-info {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 10%;
+    width: 85%;
+    font-size: 35px;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.win-exit-space {
+    justify-content: start;
+    height: 0;
+    margin-top: 8%;
+    margin-bottom: 5%;
+    margin-left: 10%;
+}
+.wins-info {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 20px;
+    font-size: 15px;
+    color: white;
+}
+.exit-button {
+    background-color: #840A0A;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+}
+.exit-button:hover {
+    background-color: #410303;
+    cursor: pointer;
+}
+.username-info:hover {
+    cursor: pointer;
+}
+
+.settings-icon {
+    position: absolute;
+    top: 4%;
+    left: 2%;
+    width: 5%;
+}
+.settings-icon:hover {
+    cursor: pointer;
+}
+.room-title {
+    position: absolute;
+    top: 4%;
+    left: 42%;
+    font-size: 200%;
+    font-family: "Inter-Regular", Helvetica;
+    color: #ffffff;
+    margin: 0;
+}
+.exit-room-b {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #840A0A;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+
+}
+.exit-room-b:hover {
+    background-color: #410303;
+    cursor: pointer;
+}
+.team-cont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #866F69;
+    height: 300px;
+    width: 300px;
+    margin-top: 100px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+.room-team-name {
+    color: #ffffff;
+    font-size: 30px;
+}
+.isplayer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 25px;
+    height: 50px;
+    width: 200px;
+    border: none;
+    border-radius: 15px;
+    font-size: 20px;
+    background-color: #212D40;
+    color: white;
+}
+.team-player-profile {
+    height: 30px;
+    margin-left: 10px;
+    margin-right: 15px;
+}
+.noplayer {
+    margin-top: 25px;
+    height: 50px;
+    width: 200px;
+    border: none;
+    font-size: 20px;
+    border-radius: 15px;
+    background-color: #3F4C64;
+    color: white;
+}
+.noplayer:hover {
+    background-color: #2f4fa5;
+    cursor: pointer;
+} 
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+   
+::-webkit-scrollbar-thumb {
+    background: #212D40;
+    border-radius: 14px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #2f4fa5;
+}
+
+@media only screen and (min-width: 1280px) and (max-width: 1500px) {
+    
+}
+
+@media only screen and (max-width: 1280px) {
+    .room {
+        width: 550px;
+        height: 350px;
+    }
+    .lobby-title {
+        margin-top: 60px;
+    }
+    .room-team-name {
+        font-size: 23px;
+    }
+    .team-player-profile {
+        height: 30px;
+    }
+    .team-cont {
+        height: 220px;
+    }
+    .isplayer {
+        margin-top: 15px;
+        height: 45px;
+        width: 180px;
+        font-size: 15px;
+    }
+    .noplayer {
+        margin-top: 15px;
+        height: 45px;
+        width: 180px;
+        font-size: 15px;
+    }
+    .user-info {
+        width: 190px;
+        height: 90px;
+    }
+    .username-info {
+        font-size: 30px;
+    }
+}
