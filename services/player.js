@@ -1,11 +1,12 @@
-export default class Player {
-    constructor(id, name) {
-        this.name = name;
-        this.id = id;
+class Player {
+    constructor(user, pos) {
+        this.name = user.username;
+        this.id = user.id;
         this.score = 0;
         this.turn = false;
         this.cards = [];
         this.cardToPlay = null;
+        this.position = pos;
     }
 
     addScore() {
@@ -40,6 +41,10 @@ export default class Player {
         return this.cards;
     }
 
+    getPosition() {
+        return this.position;
+    }
+
     choseACard(cardIndex) {
         this.cardToPlay = cardIndex
     }
@@ -60,4 +65,10 @@ export default class Player {
 
         return played;
     }
+
+    IsEqual(player) {
+        return this.id == player.id;
+    }
 }
+
+module.exports = Player;

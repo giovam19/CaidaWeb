@@ -5,9 +5,17 @@ const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const flash = require('express-flash');
 const path = require('path');
-const Users = require('./services/users.js');
+const http = require('http');
 
 const app = express();
+
+const servidor = http.createServer(app);
+const{ Server } = require('socket.io');
+const io = new Server(servidor);
+
+const Users = require('./services/users.js');
+const LobbyController = require('./services/LobbyController.js');
+
 
 const PORT = 3000; // El puerto en el que deseas ejecutar el servidor
 
@@ -72,31 +80,30 @@ function verificarAutenticacion(req, res, next) {
     res.redirect('/');
 }
 
-// Configuración de rutas
+//Metodos HTTP
 app.get('/', (req, res) => {
     res.render('login', { message: req.flash('error') });
 });
 app.get('/register', (req, res) => {
     res.render('register', { res_obj: {} });
 });
-/*app.get('/lobby', (req, res) => {
-    res.render('lobby');
-});*/
-/*app.get('/mesa', (req, res) => {
-    res.render('mesa');
-});*/
 app.get('/lobby', verificarAutenticacion, function(req, res) {
     res.render('lobby', { user: req.user });
+});
+app.get('/rooms/users', verificarAutenticacion, function(req, res) {
+    res.status(200).json(LobbyController.getTables());
 });
 app.get('/mesa', verificarAutenticacion, function(req, res) {
     res.render('mesa');
 });
 app.get('/logout', function(req, res) {
+    var user = req.user;
     req.logout(function(err) {
         if (err) {
             console.error('Error al cerrar sesión: ', err);
         }
         
+        LobbyController.removePlayerFromTable(user);
         res.redirect('/');
     });
 });
@@ -113,9 +120,41 @@ app.post('/register', async function (req, res) {
     res.render('register', { res_obj: data });
 });
 
+app.put('/room', (req, res) => {
+    var inserted = LobbyController.registerPlayerInRoom(req.user, req.body.mesa, req.body.team, req.body.pos);
+
+    var response = {
+        code: inserted ? 200 : 400,
+        message: inserted ? 'Ingresado' : 'No se pudo ingresar'
+    };
+    res.json(response);
+});
+
+app.delete('/room', (req, res) => {
+    LobbyController.removePlayerFromTable(req.user);
+    res.json({ code: 200, message: 'Saliste de la mesa' });
+});
+
+//Sockets
+io.on('connection', (socket) => {
+    console.log('$ user connected: ', socket.handshake.auth.user);
+
+    socket.emit('rooms', LobbyController.getTables());
+
+    socket.on('update-room', (data) => {
+        socket.broadcast.emit('update-room', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
 
 // Iniciar el servidor
-const server = app.listen(PORT, () => {
+/*const server = app.listen(PORT, () => {
+    console.log(`Servidor escuchando en el puerto ${PORT}`);
+});*/
+servidor.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
 

@@ -1,4 +1,4 @@
-export default class GameController {
+class GameController {
     constructor(deck, players) {
         this.deck = deck;
         this.players = players;
@@ -44,3 +44,5 @@ export default class GameController {
         this.players[this.startingPlayer].setTurn(true);
     }
 }
+
+module.exports = GameController;
