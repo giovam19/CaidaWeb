@@ -15,9 +15,14 @@ async function loggin(email, pass) {
 
 async function register(email, name, username, pass) {
     try {
-        var emailExists = await existUser(email);
+        var emailExists = await existEmail(email);
         if (emailExists) {
             return {isError: true, message: "Usuario ya existe con estes email. Por favor, intente con otro email o inicie sesión si ya está registrado"};
+        }
+
+        var usernameExists = await existUsername(username);
+        if (usernameExists) {
+            return {isError: true, message: "Usuario ya existe con estes nombre de usuario. Por favor, intente con otro nombre de usuario"};
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -30,8 +35,19 @@ async function register(email, name, username, pass) {
     }
 }
 
-async function existUser(email) {
+async function existEmail(email) {
     const rows = await db.query(`SELECT email FROM users WHERE email = ?`, [email]);
+    var data = helper.emptyOrRows(rows);
+
+    if (data.length > 0) {
+        return true;
+    }
+        
+    return false;
+}
+
+async function existUsername(username) {
+    const rows = await db.query(`SELECT username FROM users WHERE username = ?`, [username]);
     var data = helper.emptyOrRows(rows);
 
     if (data.length > 0) {
