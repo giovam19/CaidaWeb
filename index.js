@@ -91,21 +91,10 @@ app.get('/lobby', verificarAutenticacion, function(req, res) {
     res.render('lobby', { user: req.user });
 });
 app.get('/rooms/users', verificarAutenticacion, function(req, res) {
-    res.status(200).json(LobbyController.getTables());
+    res.status(200).json(LobbyController.GetRooms());
 });
 app.get('/mesa', verificarAutenticacion, function(req, res) {
     res.render('mesa');
-});
-app.get('/logout', function(req, res) {
-    var user = req.user;
-    req.logout(function(err) {
-        if (err) {
-            console.error('Error al cerrar sesión: ', err);
-        }
-        
-        LobbyController.removePlayerFromTable(user);
-        res.redirect('/');
-    });
 });
 
 app.post('/auth', passport.authenticate('local', {
@@ -119,9 +108,21 @@ app.post('/register', async function (req, res) {
 
     res.render('register', { res_obj: data });
 });
+app.post('/logout', function(req, res) {
+    if (req.body.data)
+        LobbyController.RemovePlayerFromTable(req.user, req.body.data.team, req.body.data.table, req.body.data.pos);
+
+    req.logout(function(err) {
+        if (err) {
+            console.error('Error al cerrar sesión: ', err);
+            res.json({ code: 400, message: 'Error al cerrar sesión' });
+        }
+        res.json({ code: 200, message: 'Sesión cerrada' });
+    });
+});
 
 app.put('/room', (req, res) => {
-    var inserted = LobbyController.registerPlayerInRoom(req.user, req.body.mesa, req.body.team, req.body.pos);
+    var inserted = LobbyController.RegisterPlayerInRoom(req.user, req.body.regData, req.body.prevData);
 
     var response = {
         code: inserted ? 200 : 400,
@@ -131,7 +132,7 @@ app.put('/room', (req, res) => {
 });
 
 app.delete('/room', (req, res) => {
-    LobbyController.removePlayerFromTable(req.user);
+    LobbyController.RemovePlayerFromTable(req.user, req.body.team, req.body.table, req.body.pos);
     res.json({ code: 200, message: 'Saliste de la mesa' });
 });
 
@@ -139,7 +140,7 @@ app.delete('/room', (req, res) => {
 io.on('connection', (socket) => {
     console.log('$ user connected: ', socket.handshake.auth.user);
 
-    socket.emit('rooms', LobbyController.getTables());
+    socket.emit('rooms', LobbyController.GetRooms());
 
     socket.on('update-room', (data) => {
         socket.broadcast.emit('update-room', data);

@@ -1,86 +1,46 @@
-const Deck = require("./deck.js");
-const GameController = require("./game_controller.js");
-const Player = require("./player.js");
+const Room = require("./Room.js");
+const Player = require("./Player.js");
 
-var tables = {
-    1: { id: 1, team1: [], team2: [] },
-    2: { id: 2, team1: [], team2: [] }
-};
+const NUM_ROOMS = 2;
+var rooms = [];
 
-function registerPlayerInRoom(player, table, team, pos) {
-    removePlayerFromTable(player, table, team);
-    var res = addPlayerToTable(player, team, table, pos);
-
-    return res;
+for (let i = 0; i < NUM_ROOMS; i++) {
+    rooms.push(new Room(i+1));
 }
 
-function addPlayerToTable(player, team, table, pos){
-    var table = tables[table];
+function RegisterPlayerInRoom(player, register, previous) {
+    if (previous)
+        RemovePlayerFromTable(player, previous.team, previous.table, previous.pos);
     
-    switch(team) {
-        case '1':
-            return insertPlayerController(player, table.team1, pos);
-        case '2':
-            return insertPlayerController(player, table.team2, pos);
-        default:
-            console.log("No encuentra mesa");
-    }
-
-    return false;
+    return addPlayerToTable(player, register.team, register.table, register.pos);
 }
 
-function insertPlayerController(player, team, pos) {
-    if (team.length == 2) {
+function addPlayerToTable(player, team, table, pos) {
+    try {
+        rooms[table-1].AddPlayerToTeam(player, team, pos);
+        console.log('player added: ', player.username, '\nteams: ', rooms[table-1].teams[team-1].players);
+        return true;
+    } catch (error) {
+        console.log(error);
         return false;
     }
+}
 
-    if (team.length == 1) {
-        if (team[0].position == pos) {
-            return false;
-        }
+function RemovePlayerFromTable(playerOut, team, table, pos) {
+    try {
+        rooms[table-1].RemovePlayer(playerOut, team, pos);
+        console.log('player removed: ', playerOut.username, '\nteams: ', rooms[table-1].teams[team-1].players);
+    } catch (error) {
+        console.log(error);
     }
-
-    var p = new Player(player, pos);
-    team.push(p);
-    console.log('add: ', tables);
-    console.log('add player: ', p);
-    return true;
 }
 
-function removePlayerFromTable(playerOut){
-    for (var table in tables) {
-        // Verificar si el jugador está en el equipo 1 de la mesa actual
-        var indexTeam1 = tables[table].team1.findIndex(function(player) {
-            return isEqual(player, playerOut);
-        });
-        if (indexTeam1 !== -1) {
-            tables[table].team1.splice(indexTeam1, 1);
-            break;
-        }
-
-        // Verificar si el jugador está en el equipo 2 de la mesa actual
-        var indexTeam2 = tables[table].team2.findIndex(function(player) {
-            return isEqual(player, playerOut);
-        });
-        if (indexTeam2 !== -1) {
-            tables[table].team2.splice(indexTeam2, 1);
-            break;
-        }
-    }
-
-    console.log('remove: ', tables);
-}
-
-function isEqual(objA, objB) {
-    return objA.id === objB.id;
-}
-
-function getTables() {
-    return tables;
+function GetRooms() {
+    return rooms;
 }
 
 module.exports = {
-    registerPlayerInRoom,
-    removePlayerFromTable,
-    getTables
+    RegisterPlayerInRoom,
+    RemovePlayerFromTable,
+    GetRooms
 }

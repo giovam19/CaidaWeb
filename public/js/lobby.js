@@ -18,97 +18,66 @@ let socket = io({
 var previousButton = null;
 var init = true;
 
-var exitButton1 = document.getElementById('exitB1');
-exitButton1.style.display = 'none';
+var buttonContainers = document.getElementById('rooms');
+buttonContainers.addEventListener('click', function(event) {
+    if (event.target.classList.contains('noplayer')) { // Añade jugador al equipo
+        var regData = {
+            table: event.target.getAttribute('mesa'),
+            team: event.target.getAttribute('team'),
+            pos: event.target.getAttribute('pos')
+        };
 
-exitButton1.addEventListener('click', function(event) {
-    var mesa = previousButton.getAttribute('mesa');
-    var team = previousButton.getAttribute('team');
-    var pos = previousButton.getAttribute('pos');
-    const requestOptions = {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    };
+        var prevData = null;
 
-    fetch('/room', requestOptions)
-        .then(response => response.json())
-        .then(data => {
+        if (previousButton) {
+            prevData = {
+                table: previousButton.getAttribute('mesa'),
+                team: previousButton.getAttribute('team'),
+                pos: previousButton.getAttribute('pos')
+            };
+        }
+
+        var exitButton = document.getElementById('exitB'+regData.table);
+
+        sendRequest('PUT', '/room', { regData: regData, prevData: prevData }, (data) => {
             if (data.code == 400) {
-                console.error('Error al salir de mesa: ', data.message);
+                console.error('Error al ingresar a mesa: ', data.message);
                 return;
             }
-
 
             if (previousButton) {
                 previousButton.innerHTML = outButtonInner;
                 previousButton.classList.remove(inButtonClass);
                 previousButton.classList.add(outButtonClass);
-                previousButton = null;
 
-                exitButton1.style.display = 'none';
+                document.getElementById('exitB'+prevData.table).style.display = 'none';
 
-                socket.emit('update-room', { mesa: mesa, team: team, pos: pos, state: 'out', name: user});
+                socket.emit('update-room', { data: prevData, state: 'out', name: user});
             }
+
+            previousButton = event.target;
+            event.target.innerHTML = inButtonInner;
+            event.target.classList.remove(outButtonClass);
+            event.target.classList.add(inButtonClass);
+            exitButton.style.display = '';
+            console.log('exitButton: ', exitButton);
+
+            socket.emit('update-room', { data: regData, state: 'in', name: user});
+
+            console.log('Ingreso a mesa exitoso: ', data.message);
         });
-});
+    }
 
-var botonesIngresaR1 = document.getElementById('room1');
-
-botonesIngresaR1.addEventListener('click', function(event) {
-    if (event.target.classList.contains('noplayer')) {
-        var mesa = event.target.getAttribute('mesa');
-        var team = event.target.getAttribute('team');
-        var pos = event.target.getAttribute('pos');
-
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mesa: mesa, team: team, pos: pos})
+    if (event.target.classList.contains('exit-room-b')) { // Elimina jugador del equipo
+        var prevData = {
+            table: previousButton.getAttribute('mesa'),
+            team: previousButton.getAttribute('team'),
+            pos: previousButton.getAttribute('pos')
         };
 
-        fetch('/room', requestOptions)
-            .then(response => response.json())
-            .then(data => {
-                if (data.code == 400) {
-                    console.error('Error al ingresar a mesa: ', data.message);
-                    return;
-                }
-
-                if (previousButton) {
-                    previousButton.innerHTML = outButtonInner;
-                    previousButton.classList.remove(inButtonClass);
-                    previousButton.classList.add(outButtonClass);
-                }
-
-                previousButton = event.target;
-                event.target.innerHTML = inButtonInner;
-                event.target.classList.remove(outButtonClass);
-                event.target.classList.add(inButtonClass);
-                exitButton1.style.display = '';
-                exitButton2.style.display = 'none';
-
-                socket.emit('update-room', { mesa: mesa, team: team, pos: pos, state: 'in', name: user});
-
-                console.log('Ingreso a mesa exitoso: ', data.message);
-            });
-    }
-});
-
-var exitButton2 = document.getElementById('exitB2');
-exitButton2.style.display = 'none';
-
-exitButton2.addEventListener('click', function(event) {
-    var mesa = previousButton.getAttribute('mesa');
-    var team = previousButton.getAttribute('team');
-    var pos = previousButton.getAttribute('pos');
-    const requestOptions = {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    };
-
-    fetch('/room', requestOptions)
-        .then(response => response.json())
-        .then(data => {
+        var exitButton = document.getElementById('exitB'+prevData.table);
+        
+        sendRequest('DELETE', '/room', prevData, (data) => {
             if (data.code == 400) {
                 console.error('Error al salir de mesa: ', data.message);
                 return;
@@ -119,63 +88,60 @@ exitButton2.addEventListener('click', function(event) {
                 previousButton.classList.remove(inButtonClass);
                 previousButton.classList.add(outButtonClass);
                 previousButton = null;
+                exitButton.style.display = 'none';
 
-                exitButton2.style.display = 'none';
-
-                socket.emit('update-room', { mesa: mesa, team: team, pos: pos, state: 'out', name: user});
+                socket.emit('update-room', { data: prevData, state: 'out', name: user});
             }
         });
-});
-
-var botonesIngresaR2 = document.getElementById('room2');
-
-botonesIngresaR2.addEventListener('click', function(event) {
-    if (event.target.classList.contains('noplayer')) {
-        var mesa = event.target.getAttribute('mesa');
-        var team = event.target.getAttribute('team');
-        var pos = event.target.getAttribute('pos');
-
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mesa: mesa, team: team, pos: pos})
-        };
-
-        fetch('/room', requestOptions)
-            .then(response => response.json())
-            .then(data => {
-                if (data.code == 400) {
-                    console.error('Error al ingresar a mesa: ', data.message);
-                    return;
-                }
-
-                if (previousButton) {
-                    previousButton.innerHTML = outButtonInner;
-                    previousButton.classList.remove(inButtonClass);
-                    previousButton.classList.add(outButtonClass);
-                }
-
-                previousButton = event.target;
-                event.target.innerHTML = inButtonInner;
-                event.target.classList.remove(outButtonClass);
-                event.target.classList.add(inButtonClass);
-                exitButton2.style.display = '';
-                exitButton1.style.display = 'none';
-
-                socket.emit('update-room', { mesa: mesa, team: team, pos: pos, state: 'in', name: user});
-
-                console.log('Ingreso a mesa exitoso: ', data.message);
-            });
     }
 });
+
+var logoutButton = document.getElementById('logout');
+logoutButton.addEventListener('click', function(event) {
+    var prevData = null;
+
+    if (previousButton) {
+        prevData = {
+            table: previousButton.getAttribute('mesa'),
+            team: previousButton.getAttribute('team'),
+            pos: previousButton.getAttribute('pos')
+        };
+    }
+    
+    sendRequest('POST', '/logout', { data: prevData }, (data) => {
+        if (data.code == 400) {
+            console.error('Error al cerrar sesión: ', data.message);
+            return;
+        }
+
+        window.location.href = "/";
+        console.log('Sesión cerrada: ', data.message);
+    });
+});
+
+function sendRequest(method, url, data, callback) {
+    const requestOptions = {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    };
+
+    fetch(url, requestOptions)
+        .then(response => response.json())
+        .then(data => callback(data));
+}
 
 function setButtonState(button, state, name) {
     if (state == 'in') {
         button.innerHTML = inButtonInnerC + name;
         button.classList.remove(outButtonClass);
         button.classList.add(inButtonClass);
-        if (name == user)
-            controlInit(button);
+        if (name == user && init) {
+            var mesa = button.getAttribute('mesa');
+            document.getElementById('exitB'+mesa).style.display = '';
+            previousButton = button;
+            init = false;
+        }
     } else {
         button.innerHTML = outButtonInner;
         button.classList.remove(inButtonClass);
@@ -183,49 +149,26 @@ function setButtonState(button, state, name) {
     }
 }
 
-function controlInit(button) {
-    if (init) {
-        var mesa = button.getAttribute('mesa');
-        previousButton = button;
-        if (mesa == '1') {
-            exitButton1.style.display = '';
-        } else {
-            exitButton2.style.display = '';
-        }
-    }
-}
+//-------------------------------------- Sockets --------------------------------------//
+socket.on('rooms', (rooms) => {
+    console.log('rooms: ', rooms);
 
-//Sockets
-socket.on('rooms', (tables) => {
-    console.log('rooms: ', tables);
-    var room1 = tables[1];
-    var room2 = tables[2];
-
-    room1.team1.forEach(player => {
-        var button = document.getElementById(`r1p${player.position}`);
-        setButtonState(button, 'in', player.name);
-    });
-
-    room1.team2.forEach(player => {
-        var button = document.getElementById(`r1p${player.position}`);
-        setButtonState(button, 'in', player.name);
-    });
-
-    room2.team1.forEach(player => {
-        var button = document.getElementById(`r2p${player.position}`);
-        setButtonState(button, 'in', player.name);
-    });
-
-    room2.team2.forEach(player => {
-        var button = document.getElementById(`r2p${player.position}`);
-        setButtonState(button, 'in', player.name);
+    rooms.forEach(room => {
+        room.teams.forEach(team => {
+            team.players.forEach(player => {
+                if (player.id != "") {
+                    var button = document.getElementById(`r${room.id}p${player.position}`);
+                    setButtonState(button, 'in', player.name);
+                }
+            });
+        });
     });
 });
 
 socket.on('update-room', (data) => {
-    var mesa = data.mesa;
-    var team = data.team;
-    var pos = data.pos;
+    var mesa = data.data.table;
+    var team = data.data.team;
+    var pos = data.data.pos;
     var state = data.state;
     var name = data.name;
 
