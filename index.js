@@ -13,11 +13,12 @@ const servidor = http.createServer(app);
 const{ Server } = require('socket.io');
 const io = new Server(servidor);
 
+const Mutex = require('./services/Mutex.js');
 const Users = require('./services/users.js');
 const LobbyController = require('./services/LobbyController.js');
 
-
-const PORT = 3000; // El puerto en el que deseas ejecutar el servidor
+const mutex = new Mutex();
+const PORT = 3000; // Puerto
 
 // Configuración del middleware de flash
 app.use(flash());
@@ -81,6 +82,7 @@ function verificarAutenticacion(req, res, next) {
 }
 
 //Metodos HTTP
+//-------------------------------- GET --------------------------------//
 app.get('/', (req, res) => {
     res.render('login', { message: req.flash('error') });
 });
@@ -97,6 +99,7 @@ app.get('/mesa', verificarAutenticacion, function(req, res) {
     res.render('mesa');
 });
 
+//-------------------------------- POST --------------------------------//
 app.post('/auth', passport.authenticate('local', {
     successRedirect: '/lobby',
     failureRedirect: '/',
@@ -108,35 +111,47 @@ app.post('/register', async function (req, res) {
 
     res.render('register', { res_obj: data });
 });
-app.post('/logout', function(req, res) {
-    if (req.body.data)
-        LobbyController.RemovePlayerFromTable(req.user, req.body.data.team, req.body.data.table, req.body.data.pos);
+app.post('/logout', async function(req, res) {
+    var removed = null;
+    if (req.body.data) {
+        await mutex.lock();
+        removed = LobbyController.RemovePlayerFromTable(req.user, req.body.data.team, req.body.data.table, req.body.data.pos);
+        mutex.unlock();
+    }
 
     req.logout(function(err) {
-        if (err) {
-            console.error('Error al cerrar sesión: ', err);
-            res.json({ code: 400, message: 'Error al cerrar sesión' });
+        if (err || removed) {
+            if (removed.code == 400) {
+                var msg = "Error al cerrar sesión: " + removed.msg;
+                console.error(msg);
+                res.json({ code: 400, message: msg });
+            } else {
+                var msg = "Error al cerrar sesión: " + err;
+                console.error(msg);
+                res.json({ code: 400, message: msg });
+            }
         }
         res.json({ code: 200, message: 'Sesión cerrada' });
     });
 });
 
-app.put('/room', (req, res) => {
+//-------------------------------- PUT --------------------------------//
+app.put('/room', async function (req, res) {
+    await mutex.lock();
     var inserted = LobbyController.RegisterPlayerInRoom(req.user, req.body.regData, req.body.prevData);
-
-    var response = {
-        code: inserted ? 200 : 400,
-        message: inserted ? 'Ingresado' : 'No se pudo ingresar'
-    };
-    res.json(response);
+    mutex.unlock();
+    res.json(inserted);
 });
 
-app.delete('/room', (req, res) => {
-    LobbyController.RemovePlayerFromTable(req.user, req.body.team, req.body.table, req.body.pos);
-    res.json({ code: 200, message: 'Saliste de la mesa' });
+//-------------------------------- DELETE --------------------------------//
+app.delete('/room', async function (req, res) {
+    await mutex.lock();
+    var removed = LobbyController.RemovePlayerFromTable(req.user, req.body.team, req.body.table, req.body.pos);
+    mutex.unlock();
+    res.json(removed);
 });
 
-//Sockets
+//-------------------------------- SOCKETS --------------------------------//
 io.on('connection', (socket) => {
     console.log('$ user connected: ', socket.handshake.auth.user);
 
@@ -151,10 +166,8 @@ io.on('connection', (socket) => {
     });
 });
 
-// Iniciar el servidor
-/*const server = app.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
-});*/
+
+//-------------------------------- INIT --------------------------------//
 servidor.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
