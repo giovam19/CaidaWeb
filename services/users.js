@@ -1,16 +1,21 @@
+const e = require('express');
 const db = require('../db/db');
 const helper = require('../helper');
 const bcrypt = require('bcryptjs');
 
 async function loggin(email, pass) {
-    const rows = await db.query(
-        `SELECT id, username, email, password FROM users WHERE email = ?`,
-        [email]
-    );
+    try {
+        const rows = await db.query(
+            `SELECT id, username, email, password FROM users WHERE email = ?`,
+            [email]
+        );    
+        var data = helper.validateLogin(rows, pass);
     
-    var data = helper.validateLogin(rows, pass);
-
-    return data;
+        return data;
+    } catch (err) {
+        console.error(err);
+        return {isError: true, message: "Error intentando logear al usuario. Por favor, intente más tarde"};
+    }   
 }
 
 async function register(email, name, username, pass) {
@@ -31,6 +36,7 @@ async function register(email, name, username, pass) {
 
         return {isError: false, message: "Usuario registrado"};
     } catch (err) {
+        console.error(err);
         return {isError: true, message: "Error intentando registrar al usuario. Por favor, intente más tarde"};
     }
 }
