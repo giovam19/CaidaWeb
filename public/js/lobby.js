@@ -60,7 +60,6 @@ buttonContainers.addEventListener('click', function(event) {
             event.target.classList.remove(outButtonClass);
             event.target.classList.add(inButtonClass);
             exitButton.style.display = '';
-            console.log('exitButton: ', exitButton);
 
             socket.emit('update-room', { data: regData, state: 'in', name: user});
 
@@ -91,6 +90,8 @@ buttonContainers.addEventListener('click', function(event) {
                 exitButton.style.display = 'none';
 
                 socket.emit('update-room', { data: prevData, state: 'out', name: user});
+
+                console.log("Salida de mesa exitosa: " + data.message)
             }
         });
     }
@@ -114,8 +115,13 @@ logoutButton.addEventListener('click', function(event) {
             return;
         }
 
-        window.location.href = "/";
+        if (previousButton) {
+            socket.emit('update-room', { data: prevData, state: 'out', name: user});
+        }
+
         console.log('Sesión cerrada: ', data.message);
+
+        window.location.href = "/";
     });
 });
 
@@ -129,24 +135,6 @@ function sendRequest(method, url, data, callback) {
     fetch(url, requestOptions)
         .then(response => response.json())
         .then(data => callback(data));
-}
-
-function setButtonState(button, state, name) {
-    if (state == 'in') {
-        button.innerHTML = inButtonInnerC + name;
-        button.classList.remove(outButtonClass);
-        button.classList.add(inButtonClass);
-        if (name == user && init) {
-            var mesa = button.getAttribute('mesa');
-            document.getElementById('exitB'+mesa).style.display = '';
-            previousButton = button;
-            init = false;
-        }
-    } else {
-        button.innerHTML = outButtonInner;
-        button.classList.remove(inButtonClass);
-        button.classList.add(outButtonClass);
-    }
 }
 
 //-------------------------------------- Sockets --------------------------------------//
@@ -175,3 +163,22 @@ socket.on('update-room', (data) => {
     var button = document.getElementById(`r${mesa}p${pos}`);
     setButtonState(button, state, name);
 });
+
+
+function setButtonState(button, state, name) {
+    if (state == 'in') {
+        button.innerHTML = inButtonInnerC + name;
+        button.classList.remove(outButtonClass);
+        button.classList.add(inButtonClass);
+        if (name == user && init) {
+            var mesa = button.getAttribute('mesa');
+            document.getElementById('exitB'+mesa).style.display = '';
+            previousButton = button;
+            init = false;
+        }
+    } else {
+        button.innerHTML = outButtonInner;
+        button.classList.remove(inButtonClass);
+        button.classList.add(outButtonClass);
+    }
+}

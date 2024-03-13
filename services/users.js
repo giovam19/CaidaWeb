@@ -1,4 +1,3 @@
-const e = require('express');
 const db = require('../db/db');
 const helper = require('../helper');
 const bcrypt = require('bcryptjs');

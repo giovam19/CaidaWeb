@@ -17,10 +17,10 @@ function RegisterPlayerInRoom(player, register, previous) {
 
     if (removed != null) {
         if (removed.code == 400 && added.code == 400) {
-            return {code: 400, msg: added.msg + " | " + removed.msg}
-        } else if (removed.code == 400 || added.msg == 400) {
-            var msg = removed.code == 400 ? removed.msg : added.msg;
-            return {code: 400, msg: msg};
+            return {code: 400, message: added.message + " | " + removed.message}
+        } else if (removed.code == 400 || added.message == 400) {
+            var message = removed.code == 400 ? removed.message : added.message;
+            return {code: 400, message: message};
         }
     }
 
@@ -31,10 +31,10 @@ function addPlayerToTable(player, team, table, pos) {
     try {
         rooms[table-1].AddPlayerToTeam(player, team, pos);
         console.log('player added: ', player.username, '\nteams: ', rooms[table-1].teams[team-1].players);
-        return {code: 200, msg: "Player added!"};
+        return {code: 200, message: "Player added!"};
     } catch (error) {
         console.log(error);
-        return {code: 400, msg: "Error removing player: " + error.message};
+        return {code: 400, message: "Error removing player: " + error.message};
     }
 }
 
@@ -42,10 +42,10 @@ function RemovePlayerFromTable(playerOut, team, table, pos) {
     try {
         rooms[table-1].RemovePlayer(playerOut, team, pos);
         console.log('player removed: ', playerOut.username, '\nteams: ', rooms[table-1].teams[team-1].players);
-        return {code: 200, msg: "Player removed!"};
+        return {code: 200, message: "Player removed!"};
     } catch (error) {
         console.error(error);
-        return {code: 400, msg: "Error removing player: " + error.message};
+        return {code: 400, message: "Error removing player: " + error.message};
     }
 }
 

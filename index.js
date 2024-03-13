@@ -120,18 +120,16 @@ app.post('/logout', async function(req, res) {
     }
 
     req.logout(function(err) {
-        if (err || removed) {
-            if (removed.code == 400) {
-                var msg = "Error al cerrar sesión: " + removed.msg;
-                console.error(msg);
-                res.json({ code: 400, message: msg });
-            } else {
-                var msg = "Error al cerrar sesión: " + err;
-                console.error(msg);
-                res.json({ code: 400, message: msg });
-            }
+        if (removed && removed.code == 400) {
+            console.error(removed.message);
+            res.json(removed);
+        } else if (err) {
+            console.error(err.message);
+            res.json({ code: 400, message: err.message });
+        } else {
+            console.log("Sesion cerrada!");
+            res.json({ code: 200, message: 'Sesión cerrada' });
         }
-        res.json({ code: 200, message: 'Sesión cerrada' });
     });
 });
 
