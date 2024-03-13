@@ -29,12 +29,15 @@ function RegisterPlayerInRoom(player, register, previous) {
 
 function addPlayerToTable(player, team, table, pos) {
     try {
-        rooms[table-1].AddPlayerToTeam(player, team, pos);
+        var added = rooms[table-1].AddPlayerToTeam(player, team, pos);
+        if (!added) {
+            throw new Error('Position already taken!');
+        }
         console.log('player added: ', player.username, '\nteams: ', rooms[table-1].teams[team-1].players);
         return {code: 200, message: "Player added!"};
     } catch (error) {
         console.log(error);
-        return {code: 400, message: "Error removing player: " + error.message};
+        return {code: 400, message: "Error adding player: " + error.message};
     }
 }
 
