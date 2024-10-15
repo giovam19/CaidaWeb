@@ -56,8 +56,18 @@ function GetRooms() {
     return rooms;
 }
 
+function GetRoomById(id) {
+    return rooms[id-1];
+}
+
+function GetPlayersByTable(table) {
+    return rooms[table-1].GetPlayers();
+}
+
 module.exports = {
     RegisterPlayerInRoom,
     RemovePlayerFromTable,
-    GetRooms
+    GetRooms,
+    GetRoomById,
+    GetPlayersByTable
 }

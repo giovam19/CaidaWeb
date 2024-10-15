@@ -18,9 +18,12 @@ let socket = io({
 var previousButton = null;
 var init = true;
 
+//-------------------------------------- Buttons --------------------------------------//
 var buttonContainers = document.getElementById('rooms');
 buttonContainers.addEventListener('click', function(event) {
-    if (event.target.classList.contains('noplayer')) { // Añade jugador al equipo
+
+    /* --------------------- Añade jugador al equipo --------------------- */
+    if (event.target.classList.contains('noplayer')) {
         var regData = {
             table: event.target.getAttribute('mesa'),
             team: event.target.getAttribute('team'),
@@ -63,11 +66,14 @@ buttonContainers.addEventListener('click', function(event) {
 
             socket.emit('update-room', { data: regData, state: 'in', name: user});
 
+            socket.emit('init-game', regData);
+
             console.log('Ingreso a mesa exitoso: ', data.message);
         });
     }
 
-    if (event.target.classList.contains('exit-room-b')) { // Elimina jugador del equipo
+    /* --------------------- Elimina jugador del equipo --------------------- */
+    if (event.target.classList.contains('exit-room-b')) {
         var prevData = {
             table: previousButton.getAttribute('mesa'),
             team: previousButton.getAttribute('team'),
@@ -162,6 +168,16 @@ socket.on('update-room', (data) => {
 
     var button = document.getElementById(`r${mesa}p${pos}`);
     setButtonState(button, state, name);
+});
+
+socket.on('init-game', (room, players) => {
+    console.log('init-game: socket');
+    console.log(room);
+    console.log(players);
+    var player = players.find(player => player == user);
+    if (player == user) {
+        window.location.href = '/mesa/'+room.id;
+    }
 });
 
 

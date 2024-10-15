@@ -37,6 +37,31 @@ class Room {
     GetTeam(id) {
         return this.teams[id];
     }
+
+    IsRoomReady() {
+        let ready = true;
+        this.teams.forEach(team => {
+            team.players.forEach(player => {
+                if (player.position == 0) {
+                    ready = false;
+                    return ready;
+                }
+            });
+        });
+
+        return ready;
+    }
+
+    GetPlayers() {
+        let players = [];
+        this.teams.forEach(team => {
+            team.players.forEach(player => {
+                players.push(player.getName());
+            });
+        });
+
+        return players;
+    }
 }
 
 class Team {

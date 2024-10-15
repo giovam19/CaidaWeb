@@ -16,6 +16,7 @@ const io = new Server(servidor);
 const Mutex = require('./services/Mutex.js');
 const Users = require('./services/users.js');
 const LobbyController = require('./services/LobbyController.js');
+const { nextTick } = require('process');
 
 const mutex = new Mutex();
 const PORT = 3000; // Puerto
@@ -28,8 +29,8 @@ app.use(cookieParser('#estascaidosapo91'));
 // Configuración del middleware de sesión
 app.use(session({
     secret: '#estascaidosapo91',
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
         maxAge: 86400000, //duracion de la sesion 24h
     }
@@ -46,7 +47,9 @@ passport.use(new LocalStrategy({ usernameField: 'email' },function (email, passw
         } else {
             return done(null, false, { message: data.message });
         }
-    });
+    }).catch(err => {
+        return done(err);
+    })
 }));
 
 passport.serializeUser(function (user, done) {
@@ -90,12 +93,19 @@ app.get('/register', (req, res) => {
     res.render('register', { res_obj: {} });
 });
 app.get('/lobby', verificarAutenticacion, function(req, res) {
+    io.use((socket, next) => {
+        if (req.user) {
+            socket.user = req.user;
+        }
+        next();
+    });
+
     res.render('lobby', { user: req.user });
 });
 app.get('/rooms/users', verificarAutenticacion, function(req, res) {
     res.status(200).json(LobbyController.GetRooms());
 });
-app.get('/mesa', verificarAutenticacion, function(req, res) {
+app.get('/mesa/:id', verificarAutenticacion, function(req, res) {
     res.render('mesa');
 });
 
@@ -151,9 +161,23 @@ app.delete('/room', async function (req, res) {
 
 //-------------------------------- SOCKETS --------------------------------//
 io.on('connection', (socket) => {
-    console.log('$ user connected: ', socket.handshake.auth.user);
+    if (socket.user) {
+        socket.user.sid = socket.id;
+    }
+    console.log('$ user connected: ', socket.user);
 
     socket.emit('rooms', LobbyController.GetRooms());
+
+    socket.on('init-game', (data) => {
+        var room = LobbyController.GetRoomById(data.table);
+        if (room.IsRoomReady()) {
+            var players = LobbyController.GetPlayersByTable(data.table);
+            io.sockets.emit('init-game', room, players);
+            //socket.emit('init-game', room, players);
+        }
+
+        //io.to(socket.id).emit('init-game', data);
+    });
 
     socket.on('update-room', (data) => {
         socket.broadcast.emit('update-room', data);

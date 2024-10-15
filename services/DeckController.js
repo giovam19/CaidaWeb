@@ -19,6 +19,22 @@ class Deck {
             this.cards[i] = oldValue;
         }
     }
+
+    freshDeck() {
+        return SUITS.flatMap(suit => {
+            return NORMAL.map(value => {
+                return new Card(suit, value);
+            })
+        })
+    }
+    
+    caidaDeck() {
+        return SUITS.flatMap(suit => {
+            return CAIDA.map(value => {
+                return new Card(suit, value);
+            })
+        })
+    }
 }
 
 class Card {
@@ -26,22 +42,6 @@ class Card {
         this.suit = suit;
         this.value = value;
     }
-}
-
-function freshDeck() {
-    return SUITS.flatMap(suit => {
-        return NORMAL.map(value => {
-            return new Card(suit, value);
-        })
-    })
-}
-
-function caidaDeck() {
-    return SUITS.flatMap(suit => {
-        return CAIDA.map(value => {
-            return new Card(suit, value);
-        })
-    })
 }
 
 module.exports = Deck;
