@@ -51,7 +51,7 @@ html, body {
     font-family: "Inter-Regular", Helvetica;
     color: #ffffff;
 }
-.p1 {
+.p4 {
     top: 2%;
     left: 1%;
 }
@@ -63,9 +63,66 @@ html, body {
     top: 2%;
     left: 62%;
 }
-.p4 {
+.p1 {
     top: 85%;
     left: 1%;
+}
+
+.player_cards {
+    position: absolute;
+    height: 120px;
+
+}
+.rotate90 {
+    transform: rotate(90deg);
+}
+.p1_card1 {
+    top: 780px;
+    left: 600px;
+}
+.p1_card2 {
+    top: 780px;
+    left: 720px;
+}
+.p1_card3 {
+    top: 780px;
+    left: 840px;
+}
+.p2_card1 {
+    top: 20px;
+    left: 600px;
+}
+.p2_card2 {
+    top: 20px;
+    left: 720px;
+}
+.p2_card3 {
+    top: 20px;
+    left: 840px;
+}
+.p3_card1 {
+    top: 260px;
+    left: 1320px;
+}
+.p3_card2 {
+    top: 380px;
+    left: 1320px;
+}
+.p3_card3 {
+    top: 500px;
+    left: 1320px;
+}
+.p4_card1 {
+    top: 260px;
+    left: 40px;
+}
+.p4_card2 {
+    top: 380px;
+    left: 40px;
+}
+.p4_card3 {
+    top: 500px;
+    left: 40px;
 }
 
 .tablero {
@@ -78,6 +135,61 @@ html, body {
     border-radius: 27px;
     border: 1px solid;
     border-color: #000000;
+}
+
+.table-card {
+    position: absolute;
+    height: 120px;
+}
+
+.tc1 {
+    top: 100px;
+    left: 100px;
+}
+
+.tc2 {
+    top: 100px;
+    left: 220px;
+}
+
+.tc3 {
+    top: 100px;
+    left: 340px;
+}
+
+.tc4 {
+    top: 100px;
+    left: 460px;
+}
+
+.tc5 {
+    top: 100px;
+    left: 580px;
+}
+
+.tc6 {
+    top: 270px;
+    left: 100px;
+}
+
+.tc7 {
+    top: 270px;
+    left: 220px;
+}
+
+.tc8 {
+    top: 270px;
+    left: 340px;
+}
+
+.tc9 {
+    top: 270px;
+    left: 460px;
+}
+
+.tc10 {
+    top: 270px;
+    left: 580px;
 }
 
 .chat {
@@ -247,7 +359,9 @@ html, body {
 
 @media only screen and (max-width: 1280px) {
     .profile-img {
-        height: 15%;
+        height: 32%;
+        top: 13px;
+        left: 15px;
     }
     .profile-name {
         font-size: 16px;

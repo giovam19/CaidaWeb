@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Juego - Mesa x</title>
+    <title>Juego - Mesa <%= id %></title>
 
     <link rel="stylesheet" href="/css/mesa.css" />
 </head>
@@ -13,25 +13,16 @@
 <body>
     <div class="juego">
         <div class="tablero">
-            
-        </div>
-        <div class="tarjeta-player p1">
-            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
-            <h2 class="profile-name">Player 1</h2>
-            <h3 class="profile-desc">None</h3>
-            <h3 class="profile-pts">5 pts</h3>
-        </div>
-        <div class="tarjeta-player p3">
-            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
-            <h2 class="profile-name">Player 2</h2>
-            <h3 class="profile-desc">None</h3>
-            <h3 class="profile-pts">5 pts</h3>
-        </div>
-        <div class="tarjeta-player p2">
-            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
-            <h2 class="profile-name">Player 3</h2>
-            <h3 class="profile-desc">None</h3>
-            <h3 class="profile-pts">5 pts</h3>
+            <img src="/res/img/cards/card-back1.png" id="table_card1" alt="table_card1" class="table-card tc1">
+            <img src="/res/img/cards/card-back1.png" id="table_card2" alt="table_card2" class="table-card tc2">
+            <img src="/res/img/cards/card-back1.png" id="table_card3" alt="table_card3" class="table-card tc3">
+            <img src="/res/img/cards/card-back1.png" id="table_card4" alt="table_card4" class="table-card tc4">
+            <img src="/res/img/cards/card-back1.png" id="table_card5" alt="table_card5" class="table-card tc5">
+            <img src="/res/img/cards/card-back1.png" id="table_card6" alt="table_card6" class="table-card tc6">
+            <img src="/res/img/cards/card-back1.png" id="table_card7" alt="table_card7" class="table-card tc7">
+            <img src="/res/img/cards/card-back1.png" id="table_card8" alt="table_card8" class="table-card tc8">
+            <img src="/res/img/cards/card-back1.png" id="table_card9" alt="table_card9" class="table-card tc9">
+            <img src="/res/img/cards/card-back1.png" id="table_card10" alt="table_card1" class="table-card tc10">
         </div>
         <div class="tarjeta-player p4">
             <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
@@ -39,6 +30,40 @@
             <h3 class="profile-desc">None</h3>
             <h3 class="profile-pts">5 pts</h3>
         </div>
+        <img src="/res/img/cards/card-back1.png" id="p4_card1" alt="p4_card1" class="player_cards rotate90 p4_card1">
+        <img src="/res/img/cards/card-back1.png" id="p4_card2" alt="p4_card2" class="player_cards rotate90 p4_card2">
+        <img src="/res/img/cards/card-back1.png" id="p4_card3" alt="p4_card3" class="player_cards rotate90 p4_card3">
+
+        <div class="tarjeta-player p2">
+            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
+            <h2 class="profile-name">Player 2</h2>
+            <h3 class="profile-desc">None</h3>
+            <h3 class="profile-pts">5 pts</h3>
+        </div>
+        <img src="/res/img/cards/card-back1.png" id="p2_card1" alt="p2_card1" class="player_cards p2_card1">
+        <img src="/res/img/cards/card-back1.png" id="p2_card2" alt="p2_card2" class="player_cards p2_card2">
+        <img src="/res/img/cards/card-back1.png" id="p2_card3" alt="p2_card3" class="player_cards p2_card3">
+
+        <div class="tarjeta-player p3">
+            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
+            <h2 class="profile-name">Player 3</h2>
+            <h3 class="profile-desc">None</h3>
+            <h3 class="profile-pts">5 pts</h3>
+        </div>
+        <img src="/res/img/cards/card-back1.png" id="p3_card1" alt="p3_card1" class="player_cards rotate90 p3_card1">
+        <img src="/res/img/cards/card-back1.png" id="p3_card2" alt="p3_card2" class="player_cards rotate90 p3_card2">
+        <img src="/res/img/cards/card-back1.png" id="p3_card3" alt="p3_card3" class="player_cards rotate90 p3_card3">
+
+        <div class="tarjeta-player p1">
+            <img src="/res/img/serie/user_profile.png" alt="user_profile" class="profile-img">
+            <h2 class="profile-name">Player 1</h2>
+            <h3 class="profile-desc">None</h3>
+            <h3 class="profile-pts">5 pts</h3>
+        </div>
+        <img src="/res/img/cards/card-back1.png" id="p1_card1" alt="p1_card1" class="player_cards p1_card1">
+        <img src="/res/img/cards/card-back1.png" id="p1_card2" alt="p1_card2" class="player_cards p1_card2">
+        <img src="/res/img/cards/card-back1.png" id="p1_card3" alt="p1_card3" class="player_cards p1_card3">
+        
         <div class="chat">
             <div class="chat-header">
                 <h2 class="team-name tname1">Equipo 1</h2>
@@ -64,6 +89,8 @@
             </div>
         </div>
     </div>
+
+    <script src="/js/game.js" type="module"></script>
 </body>
 
 </html>

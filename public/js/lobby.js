@@ -9,11 +9,7 @@ var inButtonInnerC = '<img src="res/img/serie/user_profile.png" alt="user_profil
 var outButtonClass = 'noplayer';
 var outButtonInner = `Ingresar`;
 
-let socket = io({
-    auth: {
-        user: user
-    }
-});
+let socket = io();
 
 var previousButton = null;
 var init = true;
@@ -24,52 +20,24 @@ buttonContainers.addEventListener('click', function(event) {
 
     /* --------------------- Añade jugador al equipo --------------------- */
     if (event.target.classList.contains('noplayer')) {
-        var regData = {
+        var prevData = null
+        var newData = {
             table: event.target.getAttribute('mesa'),
             team: event.target.getAttribute('team'),
-            pos: event.target.getAttribute('pos')
-        };
-
-        var prevData = null;
-
+            pos: event.target.getAttribute('pos'),
+            id: event.target.getAttribute('id')
+        }
+    
         if (previousButton) {
             prevData = {
                 table: previousButton.getAttribute('mesa'),
                 team: previousButton.getAttribute('team'),
-                pos: previousButton.getAttribute('pos')
+                pos: previousButton.getAttribute('pos'),
+                id: previousButton.getAttribute('id')
             };
         }
-
-        var exitButton = document.getElementById('exitB'+regData.table);
-
-        sendRequest('PUT', '/room', { regData: regData, prevData: prevData }, (data) => {
-            if (data.code == 400) {
-                console.error('Error al ingresar a mesa: ', data.message);
-                return;
-            }
-
-            if (previousButton) {
-                previousButton.innerHTML = outButtonInner;
-                previousButton.classList.remove(inButtonClass);
-                previousButton.classList.add(outButtonClass);
-
-                document.getElementById('exitB'+prevData.table).style.display = 'none';
-
-                socket.emit('update-room', { data: prevData, state: 'out', name: user});
-            }
-
-            previousButton = event.target;
-            event.target.innerHTML = inButtonInner;
-            event.target.classList.remove(outButtonClass);
-            event.target.classList.add(inButtonClass);
-            exitButton.style.display = '';
-
-            socket.emit('update-room', { data: regData, state: 'in', name: user});
-
-            socket.emit('init-game', regData);
-
-            console.log('Ingreso a mesa exitoso: ', data.message);
-        });
+    
+        socket.emit('add-to-table', newData, prevData)
     }
 
     /* --------------------- Elimina jugador del equipo --------------------- */
@@ -80,26 +48,7 @@ buttonContainers.addEventListener('click', function(event) {
             pos: previousButton.getAttribute('pos')
         };
 
-        var exitButton = document.getElementById('exitB'+prevData.table);
-        
-        sendRequest('DELETE', '/room', prevData, (data) => {
-            if (data.code == 400) {
-                console.error('Error al salir de mesa: ', data.message);
-                return;
-            }
-
-            if (previousButton) {
-                previousButton.innerHTML = outButtonInner;
-                previousButton.classList.remove(inButtonClass);
-                previousButton.classList.add(outButtonClass);
-                previousButton = null;
-                exitButton.style.display = 'none';
-
-                socket.emit('update-room', { data: prevData, state: 'out', name: user});
-
-                console.log("Salida de mesa exitosa: " + data.message)
-            }
-        });
+        socket.emit('remove-from-table', prevData)
     }
 });
 
@@ -159,6 +108,57 @@ socket.on('rooms', (rooms) => {
     });
 });
 
+socket.on('add-to-table', (res, newData, prevData) => {
+    if (res.code == 400) {
+        console.error('Error al ingresar a mesa: ', data.message);
+        return;
+    }
+
+    if (previousButton) {
+        previousButton.innerHTML = outButtonInner;
+        previousButton.classList.remove(inButtonClass);
+        previousButton.classList.add(outButtonClass);
+
+        document.getElementById('exitB'+prevData.table).style.display = 'none';
+
+        socket.emit('update-room', { data: prevData, state: 'out', name: user});
+    }
+    var exitButton = document.getElementById('exitB'+newData.table);
+    var target = document.getElementById(newData.id)
+
+    previousButton = target;
+    target.innerHTML = inButtonInner;
+    target.classList.remove(outButtonClass);
+    target.classList.add(inButtonClass);
+    exitButton.style.display = '';
+
+    socket.emit('update-room', { data: newData, state: 'in', name: user});
+    socket.emit('init-game', newData);
+
+    console.log('Ingreso a mesa exitoso: ', res.message);
+});
+
+socket.on('remove-from-table', (res, prevData) => {
+    var exitButton = document.getElementById('exitB'+prevData.table);
+
+    if (res.code == 400) {
+        console.error('Error al salir de mesa: ', res.message);
+        return;
+    }
+
+    if (previousButton) {
+        previousButton.innerHTML = outButtonInner;
+        previousButton.classList.remove(inButtonClass);
+        previousButton.classList.add(outButtonClass);
+        previousButton = null;
+        exitButton.style.display = 'none';
+
+        socket.emit('update-room', { data: prevData, state: 'out', name: user});
+
+        console.log("Salida de mesa exitosa: " + res.message)
+    }
+});
+
 socket.on('update-room', (data) => {
     var mesa = data.data.table;
     var team = data.data.team;
@@ -168,6 +168,8 @@ socket.on('update-room', (data) => {
 
     var button = document.getElementById(`r${mesa}p${pos}`);
     setButtonState(button, state, name);
+
+    console.log('mesa: ', mesa, ' actualizada.');
 });
 
 socket.on('init-game', (room, players) => {

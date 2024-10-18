@@ -1,50 +1,44 @@
-const Room = require("./Room.js");
-const Player = require("./Player.js");
+const Table = require("./Table.js");
 
-const NUM_ROOMS = 2;
-var rooms = [];
+const NUM_TABLES = 2;
+var tables = [];
 
-for (let i = 0; i < NUM_ROOMS; i++) {
-    rooms.push(new Room(i+1));
+for (let i = 0; i < NUM_TABLES; i++) {
+    tables.push(new Table(i+1));
 }
 
-function RegisterPlayerInRoom(player, register, previous) {
+function RegisterPlayerInTable(socket, register, previous) {
     var removed = null;
     if (previous)
-        removed = RemovePlayerFromTable(player, previous.team, previous.table, previous.pos);
-    
-    var added = addPlayerToTable(player, register.team, register.table, register.pos);
+        removed = RemovePlayerFromTable(previous.team, previous.table, previous.pos);
 
-    if (removed != null) {
-        if (removed.code == 400 && added.code == 400) {
-            return {code: 400, message: added.message + " | " + removed.message}
-        } else if (removed.code == 400 || added.message == 400) {
-            var message = removed.code == 400 ? removed.message : added.message;
-            return {code: 400, message: message};
-        }
+    if (removed != null && removed.code == 400) {
+        return {code: 400, message: removed.message}
     }
+    
+    var added = addPlayerToTable(socket, register.team, register.table, register.pos);
 
     return added;
 }
 
-function addPlayerToTable(player, team, table, pos) {
+function addPlayerToTable(socket, team, table, pos) {
     try {
-        var added = rooms[table-1].AddPlayerToTeam(player, team, pos);
+        var added = tables[table-1].AddPlayerToTeam(socket, team, pos);
         if (!added) {
             throw new Error('Position already taken!');
         }
-        console.log('player added: ', player.username, '\nteams: ', rooms[table-1].teams[team-1].players);
+        console.log('player added: ', socket.user.username, 'table: ', table, 'team: ', team);
         return {code: 200, message: "Player added!"};
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return {code: 400, message: "Error adding player: " + error.message};
     }
 }
 
-function RemovePlayerFromTable(playerOut, team, table, pos) {
+function RemovePlayerFromTable(team, table, pos) {
     try {
-        rooms[table-1].RemovePlayer(playerOut, team, pos);
-        console.log('player removed: ', playerOut.username, '\nteams: ', rooms[table-1].teams[team-1].players);
+        tables[table-1].RemovePlayer(team, pos);
+        console.log('player removed table: ', table, 'team: ', team);
         return {code: 200, message: "Player removed!"};
     } catch (error) {
         console.error(error);
@@ -52,22 +46,22 @@ function RemovePlayerFromTable(playerOut, team, table, pos) {
     }
 }
 
-function GetRooms() {
-    return rooms;
+function GetTables() {
+    return tables;
 }
 
-function GetRoomById(id) {
-    return rooms[id-1];
+function GetTableById(id) {
+    return tables[id-1];
 }
 
 function GetPlayersByTable(table) {
-    return rooms[table-1].GetPlayers();
+    return tables[table-1].GetPlayers();
 }
 
 module.exports = {
-    RegisterPlayerInRoom,
+    RegisterPlayerInTable,
     RemovePlayerFromTable,
-    GetRooms,
-    GetRoomById,
+    GetTables,
+    GetTableById,
     GetPlayersByTable
 }

@@ -16,6 +16,7 @@ const io = new Server(servidor);
 const Mutex = require('./services/Mutex.js');
 const Users = require('./services/users.js');
 const LobbyController = require('./services/LobbyController.js');
+const GameController = require('./services/GameController.js');
 const { nextTick } = require('process');
 
 const mutex = new Mutex();
@@ -84,6 +85,15 @@ function verificarAutenticacion(req, res, next) {
     res.redirect('/');
 }
 
+function verificarEntradaMesa(req, res, next) {
+    /* if (req.isAuthenticated()) {
+        return next();
+    }
+    
+    res.redirect('/lobby'); */
+    return next();
+}
+
 //Metodos HTTP
 //-------------------------------- GET --------------------------------//
 app.get('/', (req, res) => {
@@ -102,11 +112,9 @@ app.get('/lobby', verificarAutenticacion, function(req, res) {
 
     res.render('lobby', { user: req.user });
 });
-app.get('/rooms/users', verificarAutenticacion, function(req, res) {
-    res.status(200).json(LobbyController.GetRooms());
-});
-app.get('/mesa/:id', verificarAutenticacion, function(req, res) {
-    res.render('mesa');
+app.get('/mesa/:id', verificarEntradaMesa, function(req, res) {
+    let id = req.params.id;
+    res.render('mesa', { id: id });
 });
 
 //-------------------------------- POST --------------------------------//
@@ -125,7 +133,7 @@ app.post('/logout', async function(req, res) {
     var removed = null;
     if (req.body.data) {
         await mutex.lock();
-        removed = LobbyController.RemovePlayerFromTable(req.user, req.body.data.team, req.body.data.table, req.body.data.pos);
+        removed = LobbyController.RemovePlayerFromTable(req.body.data.team, req.body.data.table, req.body.data.pos);
         mutex.unlock();
     }
 
@@ -144,44 +152,52 @@ app.post('/logout', async function(req, res) {
 });
 
 //-------------------------------- PUT --------------------------------//
-app.put('/room', async function (req, res) {
-    await mutex.lock();
-    var inserted = LobbyController.RegisterPlayerInRoom(req.user, req.body.regData, req.body.prevData);
-    mutex.unlock();
-    res.json(inserted);
-});
+
 
 //-------------------------------- DELETE --------------------------------//
-app.delete('/room', async function (req, res) {
-    await mutex.lock();
-    var removed = LobbyController.RemovePlayerFromTable(req.user, req.body.team, req.body.table, req.body.pos);
-    mutex.unlock();
-    res.json(removed);
-});
+
 
 //-------------------------------- SOCKETS --------------------------------//
 io.on('connection', (socket) => {
     if (socket.user) {
         socket.user.sid = socket.id;
+        console.log('$ user connected: ', socket.user);
     }
-    console.log('$ user connected: ', socket.user);
 
-    socket.emit('rooms', LobbyController.GetRooms());
+    socket.emit('rooms', LobbyController.GetTables());
 
-    socket.on('init-game', (data) => {
-        var room = LobbyController.GetRoomById(data.table);
-        if (room.IsRoomReady()) {
-            var players = LobbyController.GetPlayersByTable(data.table);
-            io.sockets.emit('init-game', room, players);
-            //socket.emit('init-game', room, players);
-        }
+    socket.on('add-to-table', async (newData, prevData) => {
+        await mutex.lock();
+        var inserted = LobbyController.RegisterPlayerInTable(socket, newData, prevData);
+        mutex.unlock()
 
-        //io.to(socket.id).emit('init-game', data);
+        socket.emit('add-to-table', inserted, newData, prevData)
+    });
+
+    socket.on('remove-from-table', async (prevData) => {
+        await mutex.lock();
+        var removed = LobbyController.RemovePlayerFromTable(prevData.team, prevData.table, prevData.pos);
+        mutex.unlock();
+
+        socket.emit('remove-from-table', removed, prevData)
     });
 
     socket.on('update-room', (data) => {
         socket.broadcast.emit('update-room', data);
     });
+
+    socket.on('init-game', (data) => {
+        var table = LobbyController.GetTableById(data.table);
+        if (table.IsRoomReady()) {
+            var players = LobbyController.GetPlayersByTable(data.table);
+            io.sockets.emit('init-game', table, players);
+        }
+    });
+
+    socket.on('prepare-game', (id) => {
+        var players = LobbyController.GetPlayersByTable(id);
+        GameController.PrepareGameForTable(id);
+    })
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
@@ -200,3 +216,4 @@ if (module.hot) {
         server.close();
     });
 }
+

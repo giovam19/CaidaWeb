@@ -1,6 +1,6 @@
 const Player = require("./Player.js");
 
-class Room {
+class Table {
     constructor(id) {
         this.id = id;
         this.teams = new Array(2);
@@ -10,15 +10,16 @@ class Room {
         }
     }
 
-    AddPlayerToTeam(player, team, pos) {
+    AddPlayerToTeam(socket, team, pos) {
+        var newp = new Player(socket.user, pos, socket);
         if (team == 1) {
             if (this.teams[team-1].players[pos-1].position == 0) {
-                this.teams[team-1].players[pos-1] = new Player(player, pos);
+                this.teams[team-1].players[pos-1] = newp;
                 return true;
             }
         } else {
             if (this.teams[team-1].players[pos-3].position == 0) {
-                this.teams[team-1].players[pos-3] = new Player(player, pos);
+                this.teams[team-1].players[pos-3] = newp;
                 return true;
             }
         }
@@ -26,11 +27,11 @@ class Room {
         return false;
     }
 
-    RemovePlayer(player, team, pos) {
+    RemovePlayer(team, pos) {
         if (team == 1) {
-            this.teams[team-1].players[pos-1] = new Player({username: "", id: ""},0);
+            this.teams[team-1].players[pos-1] = new Player({username: "", id: ""}, 0, null);
         } else {
-            this.teams[team-1].players[pos-3] = new Player({username: "", id: ""},0);
+            this.teams[team-1].players[pos-3] = new Player({username: "", id: ""}, 0, null);
         }
     }
 
@@ -53,13 +54,7 @@ class Room {
     }
 
     GetPlayers() {
-        let players = [];
-        this.teams.forEach(team => {
-            team.players.forEach(player => {
-                players.push(player.getName());
-            });
-        });
-
+        let players = this.teams[0].players.concat(this.teams[1].players)
         return players;
     }
 }
@@ -70,9 +65,9 @@ class Team {
         this.players = new Array(2);
 
         for (let i = 0; i < 2; i++) {
-            this.players[i] = new Player({username: "", id: ""},0);
+            this.players[i] = new Player({username: "", id: ""}, 0, null);
         }
     }
 }
 
-module.exports = Room;
+module.exports = Table;
