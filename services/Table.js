@@ -10,8 +10,8 @@ class Table {
         }
     }
 
-    AddPlayerToTeam(socket, team, pos) {
-        var newp = new Player(socket.user, pos, socket);
+    AddPlayerToTeam(user, socket, team, pos) {
+        var newp = new Player(user, pos, socket);
         if (team == 1) {
             if (this.teams[team-1].players[pos-1].position == 0) {
                 this.teams[team-1].players[pos-1] = newp;

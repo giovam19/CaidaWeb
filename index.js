@@ -44,6 +44,7 @@ app.use(passport.session());
 passport.use(new LocalStrategy({ usernameField: 'email' },function (email, password, done) {
     Users.loggin(email, password).then(data => {
         if (!data.isError) {
+            console.log('Usuario logeado: ', data.user.username);
             return done(null, data.user);
         } else {
             return done(null, false, { message: data.message });
@@ -85,13 +86,20 @@ function verificarAutenticacion(req, res, next) {
     res.redirect('/');
 }
 
-function verificarEntradaMesa(req, res, next) {
-    /* if (req.isAuthenticated()) {
+function verificarAutenticacionJson(req, res, next) {
+    if (req.isAuthenticated()) {
         return next();
     }
     
-    res.redirect('/lobby'); */
-    return next();
+    res.status(404).json('Not Authenticated');
+}
+
+function verificarEntradaMesa(req, res, next) {
+    if (req.isAuthenticated()) { //añadir verificaion de juego actual
+        return next();
+    }
+    
+    res.redirect('/lobby');
 }
 
 //Metodos HTTP
@@ -113,8 +121,17 @@ app.get('/lobby', verificarAutenticacion, function(req, res) {
     res.render('lobby', { user: req.user });
 });
 app.get('/mesa/:id', verificarEntradaMesa, function(req, res) {
+    io.use((socket, next) => {
+        if (req.user) {
+            socket.user = req.user;
+        }
+        next();
+    });
     let id = req.params.id;
     res.render('mesa', { id: id });
+});
+app.get('/data/user', verificarAutenticacionJson, function(req, res) {
+    res.status(200).json(req.user);
 });
 
 //-------------------------------- POST --------------------------------//
@@ -145,7 +162,7 @@ app.post('/logout', async function(req, res) {
             console.error(err.message);
             res.json({ code: 400, message: err.message });
         } else {
-            console.log("Sesion cerrada!");
+            console.log('Sesión cerrada');
             res.json({ code: 200, message: 'Sesión cerrada' });
         }
     });
@@ -160,15 +177,14 @@ app.post('/logout', async function(req, res) {
 //-------------------------------- SOCKETS --------------------------------//
 io.on('connection', (socket) => {
     if (socket.user) {
-        socket.user.sid = socket.id;
-        console.log('$ user connected: ', socket.user);
+        console.log(`socket user connected: ${socket.user.username}`);
     }
 
-    socket.emit('rooms', LobbyController.GetTables());
+    socket.emit('load-rooms', LobbyController.GetTables());
 
     socket.on('add-to-table', async (newData, prevData) => {
         await mutex.lock();
-        var inserted = LobbyController.RegisterPlayerInTable(socket, newData, prevData);
+        var inserted = LobbyController.RegisterPlayerInTable(socket.user, socket.id, newData, prevData);
         mutex.unlock()
 
         socket.emit('add-to-table', inserted, newData, prevData)
@@ -190,7 +206,8 @@ io.on('connection', (socket) => {
         var table = LobbyController.GetTableById(data.table);
         if (table.IsRoomReady()) {
             var players = LobbyController.GetPlayersByTable(data.table);
-            io.sockets.emit('init-game', table, players);
+            var game_id = GameController.RegisterNewGame(data.table, players);
+            io.sockets.emit('init-game', data.table, players, game_id);
         }
     });
 
@@ -200,7 +217,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log('socket user disconnected');
     });
 });
 

@@ -1,18 +1,37 @@
 import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
 
 var user = document.getElementById('username').innerHTML;
-
-var inButtonClass = 'isplayer';
-var inButtonInner = `<img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> ${user}`;
-var inButtonInnerC = '<img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> ';
-
-var outButtonClass = 'noplayer';
-var outButtonInner = `Ingresar`;
-
-let socket = io();
-
 var previousButton = null;
-var init = true;
+
+var socket = io();
+
+function setButtonAsPlayer(username, button) {
+    var inButtonClass = 'isplayer';
+    var inButtonInner = `<img src="res/img/serie/user_profile.png" alt="user_profile" class="team-player-profile"> ${username}`;
+    var outButtonClass = 'noplayer';
+
+    button.innerHTML = inButtonInner;
+    button.classList.remove(outButtonClass);
+    button.classList.add(inButtonClass);
+}
+
+function setButtonAsAvailable(button) {
+    var outButtonInner = `Ingresar`;
+    var outButtonClass = 'noplayer';
+    var inButtonClass = 'isplayer';
+
+    button.innerHTML = outButtonInner;
+    button.classList.remove(inButtonClass);
+    button.classList.add(outButtonClass);
+}
+
+function showExitButton(mesa) {
+    document.getElementById('exitB'+mesa).style.display = '';
+}
+
+function hideExitButton(mesa) {
+    document.getElementById('exitB'+mesa).style.display = 'none';
+}
 
 //-------------------------------------- Buttons --------------------------------------//
 var buttonContainers = document.getElementById('rooms');
@@ -81,27 +100,39 @@ logoutButton.addEventListener('click', function(event) {
 });
 
 function sendRequest(method, url, data, callback) {
-    const requestOptions = {
+    const requestOptionsBody = {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     };
 
-    fetch(url, requestOptions)
-        .then(response => response.json())
-        .then(data => callback(data));
+    const requestOptions = {
+        method: method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+
+    if (method == 'GET') {
+        fetch(url, requestOptions)
+            .then(response => response.json())
+            .then(data => callback(data));
+    } else {
+        fetch(url, requestOptionsBody)
+            .then(response => response.json())
+            .then(data => callback(data));
+    }
 }
 
 //-------------------------------------- Sockets --------------------------------------//
-socket.on('rooms', (rooms) => {
-    console.log('rooms: ', rooms);
-
+socket.on('load-rooms', (rooms) => {
     rooms.forEach(room => {
         room.teams.forEach(team => {
             team.players.forEach(player => {
                 if (player.id != "") {
                     var button = document.getElementById(`r${room.id}p${player.position}`);
-                    setButtonState(button, 'in', player.name);
+                    setButtonAsPlayer(player.name, button);
+                    if (player.name == user) {
+                        showExitButton(room.id);
+                    }
                 }
             });
         });
@@ -115,22 +146,16 @@ socket.on('add-to-table', (res, newData, prevData) => {
     }
 
     if (previousButton) {
-        previousButton.innerHTML = outButtonInner;
-        previousButton.classList.remove(inButtonClass);
-        previousButton.classList.add(outButtonClass);
-
-        document.getElementById('exitB'+prevData.table).style.display = 'none';
+        setButtonAsAvailable(previousButton);
+        hideExitButton(prevData.table);
 
         socket.emit('update-room', { data: prevData, state: 'out', name: user});
     }
-    var exitButton = document.getElementById('exitB'+newData.table);
-    var target = document.getElementById(newData.id)
 
+    var target = document.getElementById(newData.id)
     previousButton = target;
-    target.innerHTML = inButtonInner;
-    target.classList.remove(outButtonClass);
-    target.classList.add(inButtonClass);
-    exitButton.style.display = '';
+    setButtonAsPlayer(user, target);
+    showExitButton(newData.table);
 
     socket.emit('update-room', { data: newData, state: 'in', name: user});
     socket.emit('init-game', newData);
@@ -139,19 +164,15 @@ socket.on('add-to-table', (res, newData, prevData) => {
 });
 
 socket.on('remove-from-table', (res, prevData) => {
-    var exitButton = document.getElementById('exitB'+prevData.table);
-
     if (res.code == 400) {
         console.error('Error al salir de mesa: ', res.message);
         return;
     }
 
     if (previousButton) {
-        previousButton.innerHTML = outButtonInner;
-        previousButton.classList.remove(inButtonClass);
-        previousButton.classList.add(outButtonClass);
+        setButtonAsAvailable(previousButton);
+        hideExitButton(prevData.table);
         previousButton = null;
-        exitButton.style.display = 'none';
 
         socket.emit('update-room', { data: prevData, state: 'out', name: user});
 
@@ -167,36 +188,21 @@ socket.on('update-room', (data) => {
     var name = data.name;
 
     var button = document.getElementById(`r${mesa}p${pos}`);
-    setButtonState(button, state, name);
+    if (state == 'in') {
+        setButtonAsPlayer(name, button);
+    } else {
+        setButtonAsAvailable(button);
+    }
 
     console.log('mesa: ', mesa, ' actualizada.');
 });
 
-socket.on('init-game', (room, players) => {
+socket.on('init-game', (roomID, players) => {
     console.log('init-game: socket');
-    console.log(room);
+    console.log(roomID);
     console.log(players);
-    var player = players.find(player => player == user);
-    if (player == user) {
-        window.location.href = '/mesa/'+room.id;
+    var player = players.find(player => player.name == user);
+    if (player.name == user) {
+        window.location.href = '/mesa/'+roomID;
     }
 });
-
-
-function setButtonState(button, state, name) {
-    if (state == 'in') {
-        button.innerHTML = inButtonInnerC + name;
-        button.classList.remove(outButtonClass);
-        button.classList.add(inButtonClass);
-        if (name == user && init) {
-            var mesa = button.getAttribute('mesa');
-            document.getElementById('exitB'+mesa).style.display = '';
-            previousButton = button;
-            init = false;
-        }
-    } else {
-        button.innerHTML = outButtonInner;
-        button.classList.remove(inButtonClass);
-        button.classList.add(outButtonClass);
-    }
-}

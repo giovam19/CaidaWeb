@@ -1,5 +1,6 @@
 class Game {
-    constructor(deck, players) {
+    constructor(id, deck, players) {
+        this.id = id;
         this.deck = deck;
         this.players = players;
         this.cardsXPlayer = 3;

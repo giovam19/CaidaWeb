@@ -7,7 +7,7 @@ for (let i = 0; i < NUM_TABLES; i++) {
     tables.push(new Table(i+1));
 }
 
-function RegisterPlayerInTable(socket, register, previous) {
+function RegisterPlayerInTable(user, socket, register, previous) {
     var removed = null;
     if (previous)
         removed = RemovePlayerFromTable(previous.team, previous.table, previous.pos);
@@ -16,18 +16,18 @@ function RegisterPlayerInTable(socket, register, previous) {
         return {code: 400, message: removed.message}
     }
     
-    var added = addPlayerToTable(socket, register.team, register.table, register.pos);
+    var added = addPlayerToTable(user, socket, register.team, register.table, register.pos);
 
     return added;
 }
 
-function addPlayerToTable(socket, team, table, pos) {
+function addPlayerToTable(user, socket, team, table, pos) {
     try {
-        var added = tables[table-1].AddPlayerToTeam(socket, team, pos);
+        var added = tables[table-1].AddPlayerToTeam(user, socket, team, pos);
         if (!added) {
             throw new Error('Position already taken!');
         }
-        console.log('player added: ', socket.user.username, 'table: ', table, 'team: ', team);
+        console.log('player added: ', user.username, 'table: ', table, 'team: ', team);
         return {code: 200, message: "Player added!"};
     } catch (error) {
         console.error(error);

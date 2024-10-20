@@ -39,7 +39,7 @@ var p4_cards = [
     document.getElementById('p4_card3'),
 ]
 
-table_cards.forEach(element => {
+/* table_cards.forEach(element => {
     element.style.visibility = 'hidden'
 });
 p1_cards.forEach(element => {
@@ -53,7 +53,7 @@ p3_cards.forEach(element => {
 });
 p4_cards.forEach(element => {
     element.style.visibility = 'hidden'
-});
+}); */
 
 socket.emit('prepare-game', id);
 
