@@ -1,7 +1,12 @@
+const Deck = require("./Deck");
+const Player = require("./Player");
+
 class Game {
     constructor(id, deck, players) {
         this.id = id;
+        /** @type {Deck} */
         this.deck = deck;
+        /** @type {Player} */
         this.players = players;
         this.cardsXPlayer = 3;
         this.numPlayers = players.length;

@@ -1,9 +1,12 @@
+const Card = require("./Card");
+
 const SUITS = ['♠', '♣', '♥', '♦'];
 const NORMAL = ['A', '2', '3', '4', '5', '6', '7', '8', '9','10', 'J', 'Q', 'K'];
 const CAIDA = ['A', '2', '3', '4', '5', '6', '7', 'J', 'Q', 'K'];
 
 class Deck {
     constructor() {
+        /** @type {Card[]} */
         this.cards = this.caidaDeck();
     }
 
@@ -34,13 +37,6 @@ class Deck {
                 return new Card(suit, value);
             })
         })
-    }
-}
-
-class Card {
-    constructor(suit, value) {
-        this.suit = suit;
-        this.value = value;
     }
 }
 

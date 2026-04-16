@@ -1,5 +1,6 @@
-const Player = require("./Player.js");
-const Helper = require("../helper.js");
+const Team = require("./Team");
+const Player = require("./Player");
+const Helper = require("../helper");
 
 class Table {
     constructor(id) {
@@ -66,15 +67,6 @@ class Table {
     GetPlayers() {
         let players = this.teams[0].players.concat(this.teams[1].players)
         return players;
-    }
-}
-
-class Team {
-    constructor(id) {
-        this.id = id;
-        
-        /** @type {Player[]} */
-        this.players = Array.from({ length: 2 }, () => Helper.setEmptyPlayer());
     }
 }
 

@@ -1,6 +1,6 @@
-/frontend/public/res
-.jpg
-.png
+*.jpg
+*.png
+*.webp
 node_modules
 package-lock.json
 .env

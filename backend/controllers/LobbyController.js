@@ -1,4 +1,4 @@
-const Table = require("./Table.js");
+const Table = require("../models/Table");
 
 const NUM_TABLES = 2;
 const MAX_NUM_TEAMS_PER_TABLE = 2;
@@ -83,5 +83,6 @@ module.exports = {
     GetTables,
     GetTableById,
     GetPlayersByTable,
-    isValidSeat
+    isValidSeat,
+    NUM_TABLES
 }

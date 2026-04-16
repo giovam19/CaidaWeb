@@ -1,4 +1,4 @@
-const Player = require("./services/Player.js");
+const Player = require("./models/Player.js");
 
 function emptyOrRows(rows) {
     if (!rows) {

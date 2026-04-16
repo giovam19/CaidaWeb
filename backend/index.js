@@ -5,11 +5,11 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
-const Mutex = require('./services/Mutex.js');
-const Users = require('./services/Users.js');
-const AuthMiddleware = require('./middleware/Auth.js');
-const LobbyController = require('./services/LobbyController.js');
-const GameController = require('./services/GameController.js');
+const Mutex = require('./services/Mutex');
+const Users = require('./services/Users');
+const AuthMiddleware = require('./middleware/Auth');
+const LobbyController = require('./controllers/LobbyController');
+const GameController = require('./controllers/GameController');
 
 const mutex = new Mutex();
 const PORT = 3001; // Puerto
