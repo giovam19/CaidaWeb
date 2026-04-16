@@ -1,17 +1,16 @@
 const Player = require("./Player.js");
+const Helper = require("../helper.js");
 
 class Table {
     constructor(id) {
         this.id = id;
-        this.teams = new Array(2);
 
-        for (let i = 0; i < 2; i++) {
-            this.teams[i] = new Team(i+1);
-        }
+        /** @type {Team[]} */
+        this.teams = Array.from({ length: 2 }, (_, i) => new Team(i + 1));
     }
 
-    AddPlayerToTeam(user, socket, team, pos) {
-        var newp = new Player(user, pos, socket);
+    AddPlayerToTeam(user, team, pos) {
+        var newp = new Player(user, pos);
         if (team == 1) {
             if (this.teams[team-1].players[pos-1].position == 0) {
                 this.teams[team-1].players[pos-1] = newp;
@@ -27,12 +26,23 @@ class Table {
         return false;
     }
 
-    RemovePlayer(team, pos) {
+    RemovePlayer(user, team, pos) {
+        var player = null;
         if (team == 1) {
-            this.teams[team-1].players[pos-1] = new Player({username: "", id: ""}, 0, null);
+            player = this.teams[team-1].players[pos-1];
+            if (player.id == user.id && player.username == user.username) {
+                this.teams[team-1].players[pos-1] = Helper.setEmptyPlayer();
+                return true;
+            }
         } else {
-            this.teams[team-1].players[pos-3] = new Player({username: "", id: ""}, 0, null);
+            player = this.teams[team-1].players[pos-3];
+            if (player.id == user.id && player.username == user.username) {
+                this.teams[team-1].players[pos-3] = Helper.setEmptyPlayer();
+                return true;
+            }
         }
+
+        return false;
     }
 
     GetTeam(id) {
@@ -62,11 +72,9 @@ class Table {
 class Team {
     constructor(id) {
         this.id = id;
-        this.players = new Array(2);
-
-        for (let i = 0; i < 2; i++) {
-            this.players[i] = new Player({username: "", id: ""}, 0, null);
-        }
+        
+        /** @type {Player[]} */
+        this.players = Array.from({ length: 2 }, () => Helper.setEmptyPlayer());
     }
 }
 

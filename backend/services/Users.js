@@ -8,7 +8,7 @@ async function loggin(email, pass) {
             `SELECT id, username, email, password FROM users WHERE email = ?`,
             [email]
         );    
-        var data = helper.validateLogin(rows, pass);
+        var data = validateLogin(rows, pass);
     
         return data;
     } catch (err) {
@@ -60,6 +60,23 @@ async function existUsername(username) {
     }
         
     return false;
+}
+
+function validateLogin(rows, pass) {
+    const data = helper.emptyOrRows(rows);
+
+    if ( data == [] || data.length == 0) {
+        return {isError: true, user: null, message: "Email no encontrado."};
+    }
+    
+    const {id, username, email, password} = data[0];
+    const validPass = bcrypt.compareSync(pass, password);
+
+    if (validPass) {
+        return { isError: false, user: {id, username, email}, message: "Usuario logeado"};
+    }
+
+    return { isError: true, user: null, message: "Contraseña incorrecta!" };
 }
 
 module.exports = {

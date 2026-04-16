@@ -4,10 +4,9 @@ USE caida;
 
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users(
-	id			int auto_increment,	
+	id			CHAR(36) NOT NULL PRIMARY KEY DEFAULT (UUID()),	
     email		VARCHAR(255),
 	name		VARCHAR(255),
     username	VARCHAR(255),
-    password	VARCHAR(255),
-	PRIMARY KEY (id)
+    password	VARCHAR(255)
 );

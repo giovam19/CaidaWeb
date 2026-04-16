@@ -1,8 +1,7 @@
 class Player {
-    constructor(user, pos, socket) {
-        this.name = user.username;
+    constructor(user, pos) {
+        this.username = user.username;
         this.id = user.id;
-        this.socket = socket
         this.score = 0;
         this.turn = false;
         this.cards = [];

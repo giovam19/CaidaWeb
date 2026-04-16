@@ -1,6 +1,6 @@
+/frontend/public/res
 .jpg
 .png
-/public/res
-/node_modules
+node_modules
 package-lock.json
-config.js
+.env

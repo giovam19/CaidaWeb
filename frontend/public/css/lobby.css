@@ -96,7 +96,7 @@ html, body {
 .settings-icon {
     position: absolute;
     top: 4%;
-    left: 2%;
+    left: 3%;
     width: 5%;
 }
 .settings-icon:hover {
@@ -188,8 +188,45 @@ html, body {
     background: #2f4fa5;
 }
 
-@media only screen and (min-width: 1280px) and (max-width: 1500px) {
-    
+@media only screen and (min-width: 1280px) and (max-width: 1550px) {
+    .room {
+        width: 700px;
+        height: 400px;
+    }
+    .room-title {
+        top: 5%;
+    }
+    .lobby-title {
+        margin-top: 45px;
+    }
+    .room-team-name {
+        font-size: 27px;
+    }
+    .team-cont {
+        height: 260px;
+    }
+    .isplayer {
+        margin-top: 20px;
+        height: 45px;
+        width: 180px;
+        font-size: 15px;
+    }
+    .noplayer {
+        margin-top: 20px;
+        height: 45px;
+        width: 180px;
+        font-size: 15px;
+    }
+    .user-info {
+        width: 200px;
+        height: 90px;
+    }
+    .username-info {
+        font-size: 30px;
+    }
+    .wins-info {
+        margin-right: 35px;
+    }
 }
 
 @media only screen and (max-width: 1280px) {
