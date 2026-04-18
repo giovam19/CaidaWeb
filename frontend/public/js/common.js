@@ -1,7 +1,8 @@
 export const common = {
     BACK_URL_BASE: "http://localhost:3001",
-    sendRequest: function(method, endpoint, data, auth = false, callback) {
+    sendRequest: async function(method, endpoint, data, auth = false) {
         const url = common.BACK_URL_BASE + endpoint;
+
         const headers = {
             'Content-Type': 'application/json'
         };
@@ -22,14 +23,12 @@ export const common = {
             options.body = JSON.stringify(data);
         }
 
-        fetch(url, options)
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                if (data) callback(data);
-            })
-            .catch(err => new Error(err));
+        try {
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (error) {
+            return {code: 400, message: error};
+        }
     },
     emptyOrRows: function(rows) {
         if (!rows) {

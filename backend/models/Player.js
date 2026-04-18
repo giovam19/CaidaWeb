@@ -1,11 +1,12 @@
 class Player {
-    constructor(user, pos) {
+    constructor(user, pos, team) {
         this.username = user.username;
         this.id = user.id;
         this.score = 0;
         this.turn = false;
         this.cards = [];
         this.cardToPlay = null;
+        this.team = team;
         this.position = pos;
     }
 
@@ -26,7 +27,7 @@ class Player {
     }
 
     getName() {
-        return this.name;
+        return this.username;
     }
 
     getId() {
@@ -43,6 +44,10 @@ class Player {
 
     getPosition() {
         return this.position;
+    }
+
+    isEmptyPlayer() {
+        return this.position == 0;
     }
 
     choseACard(cardIndex) {
@@ -67,7 +72,7 @@ class Player {
     }
 
     IsEqual(player) {
-        return this.id == player.id;
+        return this.id == player.id && this.username == player.username;
     }
 }
 

@@ -8,6 +8,10 @@ const MAX_NUM_POS_PER_TEAM = 4;
 var tables = Array.from({ length: NUM_TABLES }, (_, i) => new Table(i+1));
 
 function RegisterPlayerInTable(user, actualSeat, seat) {
+    if (!isValidSeat(seat)) {
+        return {code: 400, message: "Datos de mesa invalidos."};
+    }
+    
     if (actualSeat) {
         var removed = RemovePlayerFromTable(user, actualSeat.team, actualSeat.table, actualSeat.pos);
         if (removed.code == 400) {
@@ -83,6 +87,5 @@ module.exports = {
     GetTables,
     GetTableById,
     GetPlayersByTable,
-    isValidSeat,
     NUM_TABLES
 }

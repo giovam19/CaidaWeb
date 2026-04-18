@@ -5,20 +5,20 @@ const Helper = require("../helper");
 class Table {
     constructor(id) {
         this.id = id;
-
         /** @type {Team[]} */
         this.teams = Array.from({ length: 2 }, (_, i) => new Team(i + 1));
+        this.game = null;
     }
 
     AddPlayerToTeam(user, team, pos) {
-        var newp = new Player(user, pos);
+        var newp = new Player(user, pos, team);
         if (team == 1) {
-            if (this.teams[team-1].players[pos-1].position == 0) {
+            if (this.teams[team-1].players[pos-1].isEmptyPlayer()) {
                 this.teams[team-1].players[pos-1] = newp;
                 return true;
             }
         } else {
-            if (this.teams[team-1].players[pos-3].position == 0) {
+            if (this.teams[team-1].players[pos-3].isEmptyPlayer()) {
                 this.teams[team-1].players[pos-3] = newp;
                 return true;
             }
@@ -31,13 +31,13 @@ class Table {
         var player = null;
         if (team == 1) {
             player = this.teams[team-1].players[pos-1];
-            if (player.id == user.id && player.username == user.username) {
+            if (player.IsEqual(user)) {
                 this.teams[team-1].players[pos-1] = Helper.setEmptyPlayer();
                 return true;
             }
         } else {
             player = this.teams[team-1].players[pos-3];
-            if (player.id == user.id && player.username == user.username) {
+            if (player.IsEqual(user)) {
                 this.teams[team-1].players[pos-3] = Helper.setEmptyPlayer();
                 return true;
             }
@@ -50,11 +50,11 @@ class Table {
         return this.teams[id];
     }
 
-    IsRoomReady() {
+    IsTableFull() {
         let ready = true;
         this.teams.forEach(team => {
             team.players.forEach(player => {
-                if (player.position == 0) {
+                if (player.isEmptyPlayer()) {
                     ready = false;
                     return ready;
                 }

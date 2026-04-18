@@ -1,10 +1,10 @@
 import { common } from "./common.js";
 
-common.sendRequest("GET", "/me", null, true, (data) => {
-    if (data.token){
-        window.location.href = "/lobby";
-    }
-});
+const result = await common.sendRequest("GET", "/me", null, true);
+
+if (result.token){
+    window.location.href = "/lobby";
+}
 
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -18,7 +18,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
     try {
         const body = { email, password };
-        common.sendRequest("POST", "/auth", body, false, (result) => {
+        common.sendRequest("POST", "/auth", body, false).then((result) => {
             if (!result.data.isError) {
                 // hcaer cosas con jwt
                 localStorage.setItem("token", result.token);

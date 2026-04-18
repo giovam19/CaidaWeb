@@ -1,9 +1,28 @@
 import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
+import { common } from "./common.js";
 
-const path = window.location.pathname;
-const id = path.split('/')[2];
+const result = await common.sendRequest("GET", "/me", null, true);
+if (!result.token) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+}
 
-let socket = io();
+let params = new URLSearchParams(document.location.search);
+let gameInfo = {
+    id: params.get("id"),
+    gameId: params.get("game")
+}
+
+const game = await common.sendRequest("POST", `/checkGame`, gameInfo, false);
+if (!game) {
+    //window.location.href = "/lobby";
+}
+
+const socket = io(common.BACK_URL_BASE, {
+    auth: {
+        token: localStorage.removeItem("token")
+    }
+});
 
 var table_cards = [
     document.getElementById('table_card1'),
@@ -54,10 +73,10 @@ p3_cards.forEach(element => {
 p4_cards.forEach(element => {
     element.style.visibility = 'hidden'
 }); */
-
+/*
 socket.emit('prepare-game', id);
 
 //-------------------------------------- Sockets --------------------------------------//
 socket.on('', () => {
 
-});
+});*/

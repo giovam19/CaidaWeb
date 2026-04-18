@@ -1,17 +1,27 @@
 class Mutex {
     constructor() {
+        this.queue = [];
         this.locked = false;
     }
 
-    async lock() {
-        while (this.locked) {
-            await new Promise(resolve => setTimeout(resolve, 10)); // Espera 10 milisegundos
-        }
-        this.locked = true;
+    lock() {
+        return new Promise(resolve => {
+            if (!this.locked) {
+                this.locked = true;
+                resolve();
+            } else {
+                this.queue.push(resolve);
+            }
+        });
     }
 
     unlock() {
-        this.locked = false;
+        if (this.queue.length > 0) {
+            const next = this.queue.shift();
+            next(); // 🔥 pasa el lock al siguiente
+        } else {
+            this.locked = false;
+        }
     }
 }
 

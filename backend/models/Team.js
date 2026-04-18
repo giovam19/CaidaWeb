@@ -1,4 +1,5 @@
 const Player = require("./Player");
+const Helper = require("../helper");
 
 class Team {
     constructor(id) {

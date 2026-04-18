@@ -2,8 +2,9 @@ const Deck = require("./Deck");
 const Player = require("./Player");
 
 class Game {
-    constructor(id, deck, players) {
+    constructor(id, deck, players, tableId) {
         this.id = id;
+        this.tableId = tableId;
         /** @type {Deck} */
         this.deck = deck;
         /** @type {Player} */

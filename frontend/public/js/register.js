@@ -14,7 +14,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
 
     try {
         const body = { name, username, email, password };
-        common.sendRequest("POST", "/register", body, false, (result) => {
+        common.sendRequest("POST", "/register", body, false).then((result) => {
             if (!result.isError) {
                 // hcaer cosas con jwt
                 localStorage.removeItem("token");

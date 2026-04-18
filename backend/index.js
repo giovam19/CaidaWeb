@@ -7,9 +7,11 @@ require('dotenv').config();
 
 const Mutex = require('./services/Mutex');
 const Users = require('./services/Users');
+const LogManager = require('./services/Logs');
 const AuthMiddleware = require('./middleware/Auth');
 const LobbyController = require('./controllers/LobbyController');
 const GameController = require('./controllers/GameController');
+const LobbySockets = require('./sockets/lobby.js');
 
 const mutex = new Mutex();
 const PORT = 3001; // Puerto
@@ -71,6 +73,17 @@ app.post('/register', async function (req, res) {
     }
 });
 
+app.post('/checkGame', function (req, res) {
+    const params = req.body;
+    var game = GameController.CheckGameId(params.id, params.gameId);
+
+    if (game) {
+        res.status(200).json(game);
+    } else {
+        res.status(400).json(null);
+    }
+});
+
 app.post('/logout', async function(req, res) {
     //por ver
 });
@@ -93,95 +106,27 @@ io.use((socket, next) => {
         const user = jwt.verify(token, process.env.JWT_KEY);
         socket.user = user;
         socket.actualSeat = null;
-        console.log(`[LOG]: Socket user ${socket.user.username} connected`);
+        LogManager.printInfo(`Socket user ${socket.user.username} connected`);
         next();
     } catch (err) {
         next(new Error("Invalid token"));
     }
 });
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     socket.emit('render-lobby', LobbyController.GetTables());
 
-    socket.on('add-to-table', async (seat) => {
-        if (!LobbyController.isValidSeat(seat)) {
-            socket.emit('error-found', {code: 400, message: "Datos de mesa invalidos."});
-            return;
-        }
-
-        await mutex.lock();
-        var inserted = LobbyController.RegisterPlayerInTable(socket.user, socket.actualSeat, seat);
-        mutex.unlock()
-
-        if (inserted.code == 200) {
-            console.log("[LOG]: " + inserted.message);
-            socket.actualSeat = seat;
-            socket.join(`table_${socket.actualSeat.table}`);
-            io.emit('render-lobby', LobbyController.GetTables());
-        } else {
-            console.log("[LOG]: " + inserted.message);
-            socket.emit('error-found', inserted);
-        }
-
-    });
-
-    socket.on('remove-from-table', async () => {
-        if (!socket.actualSeat) {
-            const error = {code: 400, message: `Error removing player ${socket.user.username}: actual seat not found.`};
-            console.log("[LOG]: " + error.message);
-            socket.emit('error-found', error);
-            return;
-        }
-
-        await mutex.lock();
-        var removed = LobbyController.RemovePlayerFromTable(socket.user, socket.actualSeat.team, socket.actualSeat.table, socket.actualSeat.pos);
-        mutex.unlock();
-
-        if (removed.code == 200) {
-            console.log("[LOG]: " + removed.message);
-            socket.leave(`table_${socket.actualSeat.table}`);
-            socket.actualSeat = null;
-            io.emit('render-lobby', LobbyController.GetTables());
-        } else {
-            console.log("[LOG]: " + removed.message);
-            socket.emit('error-found', removed);
-        }
-    });
-
-    socket.on('init-game', (data) => {
-        var table = LobbyController.GetTableById(data.table);
-        if (table.IsRoomReady()) {
-            var players = LobbyController.GetPlayersByTable(data.table);
-            var game_id = GameController.RegisterNewGame(data.table, players);
-            io.sockets.emit('init-game', data.table, players, game_id);
-        }
-    });
-
-    socket.on('prepare-game', (id) => {
-        var players = LobbyController.GetPlayersByTable(id);
-        GameController.PrepareGameForTable(id);
-    })
+    await LobbySockets.logic(io, socket, mutex, LobbyController, GameController);
 
     socket.on('disconnecting', async () => {
-        if (socket.actualSeat) {
-            await mutex.lock();
-            var removed = LobbyController.RemovePlayerFromTable(
-                socket.user,
-                socket.actualSeat.team,
-                socket.actualSeat.table,
-                socket.actualSeat.pos
-            );
-            mutex.unlock();
-            console.log("[LOG]: " + removed.message);
-            io.emit('render-lobby', LobbyController.GetTables());
-        }
-        console.log(`[LOG]: socket user ${socket.user.username} disconnected`);
+        await LobbySockets.disconnect(io, socket, mutex, LobbyController);
+        LogManager.printInfo(`Socket user ${socket.user.username} disconnected`);
     });
 });
 
 //-------------------------------- INIT --------------------------------//
 servidor.listen(PORT, "0.0.0.0", () => {
-    console.log(`Servidor escuchando en el puerto ${PORT}`);
+    LogManager.printInfo(`Servidor escuchando en el puerto ${PORT}`);
 });
 
 if (module.hot) {

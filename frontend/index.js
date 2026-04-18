@@ -27,7 +27,7 @@ app.get('/lobby', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/lobby.html'));
 });
 
-app.get('/mesa/:id', (req, res) => {
+app.get('/mesa', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/mesa.html'));
 });
 

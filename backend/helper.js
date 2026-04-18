@@ -8,7 +8,7 @@ function emptyOrRows(rows) {
 }
 
 function setEmptyPlayer() {
-    return new Player({ username: "", id: "" }, 0);
+    return new Player({ username: "", id: "" }, 0, 0);
 }
 
 module.exports = {

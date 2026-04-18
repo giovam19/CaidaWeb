@@ -2,16 +2,15 @@ import { io } from "https://cdn.socket.io/4.7.4/socket.io.esm.min.js";
 import { common } from "./common.js";
 
 var globalUser = {};
+const result = await common.sendRequest("GET", "/me", null, true);
 
-common.sendRequest("GET", "/me", null, true, (result) => {
-    if (!result.token) {
-        localStorage.removeItem("token");
-        window.location.href = "/";        
-    } else {
-        document.getElementById('username').innerText = result.user.username;
-        globalUser = result.user;
-    }
-});
+if (!result.token) {
+    localStorage.removeItem("token");
+    window.location.href = "/";        
+} else {
+    globalUser = result.user;
+    document.getElementById('username').innerText = result.user.username;
+}
 
 const socket = io(common.BACK_URL_BASE, {
     auth: {
@@ -57,7 +56,7 @@ function renderLobby(rooms) {
             var count = 0;
             team.players.forEach(player => {
                 count++;
-                if (player.id != "") {
+                if (player.position != 0) {
                     var button = document.getElementById(`r${room.id}t${team.id}p${player.position}`);
                     setButtonAsPlayer(player.username, button);
                     if (player.username == globalUser.username && player.id == globalUser.id) {
@@ -118,12 +117,6 @@ socket.on('error-found', (error) => {
     console.error("Socket: " + error.message);
 });
 
-socket.on('init-game', (roomID, players) => {
-    console.log('init-game: socket');
-    console.log(roomID);
-    console.log(players);
-    var player = players.find(player => player.name == globalUser.username);
-    if (player.name == globalUser.username) {
-        window.location.href = '/mesa/'+roomID;
-    }
+socket.on('game-start', (gameData) => {
+    window.location.href = `/mesa?id=${gameData.tableId}&game=${gameData.gameId}`;
 });
