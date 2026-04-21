@@ -1,0 +1,11 @@
+class Card {
+    public suit: string;
+    public value: string;
+
+    public constructor(suit: string, value: string) {
+        this.suit = suit;
+        this.value = value;
+    }
+}
+
+export = Card;

@@ -22,19 +22,19 @@ const BgGray = "\x1b[100m"
 
 const Reset = "\x1b[0m"
 
-function printLog(message) {
+function printLog(message: string) {
     console.log(`${FgWhite}${BgBlue}[LOG]: ${message} ${Reset}`);
 }
 
-function printError(message) {
+function printError(message: string) {
     console.log(`${FgWhite}${BgRed}[ERROR]: ${message} ${Reset}`);
 }
 
-function printInfo(message) {
+function printInfo(message: string) {
     console.log(`${FgBlack}${BgYellow}[INFO]: ${message} ${Reset}`);
 }
 
-module.exports = {
+export = {
     printLog,
     printError,
     printInfo

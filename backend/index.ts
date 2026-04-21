@@ -1,29 +1,35 @@
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
+import express from "express";
+import http from "http";
+import cors from "cors";
+import jwt from "jsonwebtoken";
+import { Server } from "socket.io";
+import dotenv from "dotenv"
 
-require('dotenv').config();
-
-const Mutex = require('./services/Mutex');
-const Users = require('./services/Users');
-const LogManager = require('./services/Logs');
-const AuthMiddleware = require('./middleware/Auth');
-const LobbyController = require('./controllers/LobbyController');
-const GameController = require('./controllers/GameController');
-const LobbySockets = require('./sockets/lobby.js');
+import Mutex from './services/Mutex'
+import Users from './services/Users'
+import LogManager from './services/Logs'
+import { AuthRequest, validateJWT } from './middleware/Auth'
+import { CustomSocket } from "./helper";
+import { AuthResponse, JWTResponse } from "../shared/DTO/ResponseDTO";
+import LobbyController from './controllers/LobbyController'
+import GameController from './controllers/GameController'
+import LobbySockets from './sockets/lobby'
+import UserDTO from "../shared/DTO/UserDTO";
 
 const mutex = new Mutex();
+const lobbyController = new LobbyController();
+const gameController = new GameController();
 const PORT = 3001; // Puerto
 const app = express();
 
 const servidor = http.createServer(app);
-const{ Server } = require('socket.io');
 const io = new Server(servidor, {
     cors: {
         origin: "*"
     }
 });
+
+dotenv.config()
 
 app.use(cors({
     origin: "*"
@@ -35,8 +41,8 @@ app.use(express.urlencoded({ extended: true }));
 
 //Metodos HTTP
 //-------------------------------- GET --------------------------------//
-app.get('/me', AuthMiddleware.validateJWT, function(req, res) {
-    res.status(200).json({ token: true, message: "Valid token", user: req.user });
+app.get('/me', validateJWT, function(req: AuthRequest, res) {
+    res.status(200).json({ token: true, message: "Valid token", user: req.user } as JWTResponse);
 });
 
 //-------------------------------- POST --------------------------------//
@@ -45,21 +51,18 @@ app.post('/auth', async function (req, res) {
     var data = await Users.loggin(email, password);
 
     if (data.isError) {
-        return res.status(400).json({ token: "null", data });
+        let token = "null";
+        return res.status(400).json({ token, data } as AuthResponse);
     }
 
-    const user = data.user;
+    const user = data.user as UserDTO;
     const token = jwt.sign(
-        {
-            id: user.id,
-            username: user.username,
-            email: user.email
-        },
-        process.env.JWT_KEY,
+        user,
+        process.env.JWT_KEY as string,
         { expiresIn: "24h" }
     );
 
-    res.status(200).json({ token, data });
+    res.status(200).json({ token, data } as AuthResponse);
 });
 
 app.post('/register', async function (req, res) {
@@ -75,7 +78,7 @@ app.post('/register', async function (req, res) {
 
 app.post('/checkGame', function (req, res) {
     const params = req.body;
-    var game = GameController.CheckGameId(params.id, params.gameId);
+    var game = gameController.CheckGameId(params.id, params.gameId);
 
     if (game) {
         res.status(200).json(game);
@@ -95,15 +98,15 @@ app.post('/logout', async function(req, res) {
 
 
 //-------------------------------- SOCKETS --------------------------------//
-io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
+io.use((socket: CustomSocket, next) => {
+    const token = socket.handshake.auth.token as string;
 
     if (!token) {
         return next(new Error("No token"));
     }
 
     try {
-        const user = jwt.verify(token, process.env.JWT_KEY);
+        const user = jwt.verify(token, process.env.JWT_KEY as string) as UserDTO;
         socket.user = user;
         socket.actualSeat = null;
         LogManager.printInfo(`Socket user ${socket.user.username} connected`);
@@ -113,14 +116,14 @@ io.use((socket, next) => {
     }
 });
 
-io.on('connection', async (socket) => {
-    socket.emit('render-lobby', LobbyController.GetTables());
+io.on('connection', async (socket: CustomSocket) => {
+    socket.emit('render-lobby', lobbyController.GetTables());
 
-    await LobbySockets.logic(io, socket, mutex, LobbyController, GameController);
+    await LobbySockets.logic(io, socket, mutex, lobbyController, gameController);
 
     socket.on('disconnecting', async () => {
-        await LobbySockets.disconnect(io, socket, mutex, LobbyController);
-        LogManager.printInfo(`Socket user ${socket.user.username} disconnected`);
+        await LobbySockets.disconnect(io, socket, mutex, lobbyController);
+        LogManager.printInfo(`Socket user ${socket.user!.username} disconnected`);
     });
 });
 
@@ -128,10 +131,3 @@ io.on('connection', async (socket) => {
 servidor.listen(PORT, "0.0.0.0", () => {
     LogManager.printInfo(`Servidor escuchando en el puerto ${PORT}`);
 });
-
-if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => {
-        server.close();
-    });
-}

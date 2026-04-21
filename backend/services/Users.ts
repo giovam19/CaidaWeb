@@ -1,23 +1,32 @@
-const db = require('../db/db');
-const helper = require('../helper');
-const bcrypt = require('bcryptjs');
+import { RowDataPacket } from "mysql2";
+import bcrypt from "bcryptjs"
+import db from "../db/db"
+import { EmptyOrRows } from "../helper";
+import { LogginResponse, RegisterResponse } from "../../shared/DTO/ResponseDTO";
 
-async function loggin(email, pass) {
+interface User extends RowDataPacket {
+    id: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
+async function loggin(email: string, pass: string): Promise<LogginResponse> {
     try {
         const rows = await db.query(
             `SELECT id, username, email, password FROM users WHERE email = ?`,
             [email]
-        );    
+        ) as User[];    
         var data = validateLogin(rows, pass);
     
         return data;
     } catch (err) {
         console.error(err);
-        return {isError: true, message: "Error intentando logear al usuario. Por favor, intente más tarde"};
+        return {isError: true, user: null, message: "Error intentando logear al usuario. Por favor, intente más tarde"};
     }   
 }
 
-async function register(email, name, username, pass) {
+async function register(email: string, name: string, username: string, pass: string): Promise<RegisterResponse> {
     try {
         var emailExists = await existEmail(email);
         if (emailExists) {
@@ -40,9 +49,9 @@ async function register(email, name, username, pass) {
     }
 }
 
-async function existEmail(email) {
-    const rows = await db.query(`SELECT email FROM users WHERE email = ?`, [email]);
-    var data = helper.emptyOrRows(rows);
+async function existEmail(email: string) {
+    const rows = await db.query(`SELECT email FROM users WHERE email = ?`, [email]) as User[];
+    var data = EmptyOrRows(rows) as User[];
 
     if (data.length > 0) {
         return true;
@@ -51,9 +60,9 @@ async function existEmail(email) {
     return false;
 }
 
-async function existUsername(username) {
-    const rows = await db.query(`SELECT username FROM users WHERE username = ?`, [username]);
-    var data = helper.emptyOrRows(rows);
+async function existUsername(username: string) {
+    const rows = await db.query(`SELECT username FROM users WHERE username = ?`, [username]) as User[];
+    var data = EmptyOrRows(rows) as User[];
 
     if (data.length > 0) {
         return true;
@@ -62,24 +71,24 @@ async function existUsername(username) {
     return false;
 }
 
-function validateLogin(rows, pass) {
-    const data = helper.emptyOrRows(rows);
+function validateLogin(rows: User[], pass: string): LogginResponse {
+    const data = EmptyOrRows(rows) as User[];
 
-    if ( data == [] || data.length == 0) {
+    if (data.length == 0) {
         return {isError: true, user: null, message: "Email no encontrado."};
     }
     
-    const {id, username, email, password} = data[0];
-    const validPass = bcrypt.compareSync(pass, password);
+    const userData = data[0];
+    const validPass = bcrypt.compareSync(pass, userData!.password);
 
     if (validPass) {
-        return { isError: false, user: {id, username, email}, message: "Usuario logeado"};
+        return { isError: false, user: {id: userData!.id, username: userData!.username, email: userData!.email}, message: "Usuario logeado"};
     }
 
     return { isError: true, user: null, message: "Contraseña incorrecta!" };
 }
 
-module.exports = {
+export = {
     loggin,
     register
 }

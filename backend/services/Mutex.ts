@@ -1,11 +1,14 @@
 class Mutex {
-    constructor() {
+    private queue: Array<() => void>;
+    private locked: boolean;
+
+    public constructor() {
         this.queue = [];
         this.locked = false;
     }
 
-    lock() {
-        return new Promise(resolve => {
+    public lock(): Promise<void> {
+        return new Promise((resolve) => {
             if (!this.locked) {
                 this.locked = true;
                 resolve();
@@ -15,14 +18,17 @@ class Mutex {
         });
     }
 
-    unlock() {
+    public unlock() {
         if (this.queue.length > 0) {
             const next = this.queue.shift();
-            next(); // 🔥 pasa el lock al siguiente
+            
+            if (next){
+                next(); // 🔥 pasa el lock al siguiente
+            }
         } else {
             this.locked = false;
         }
     }
 }
 
-module.exports = Mutex;
+export = Mutex;
